@@ -1,0 +1,7 @@
+{
+    "require": {
+        "php": "^7.2",
+        "linecorp/line-bot-sdk": "^3.3",
+        "monolog/monolog": "^1.23"
+    }
+}
