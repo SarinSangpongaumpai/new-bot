@@ -40,9 +40,9 @@ class Constant
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         $result = curl_exec($ch);
-        if ($result != '{}') {
-            $result = 'Error';
-        }
+        // if ($result != '{}') {
+        //     $result = 'Error';
+        // }
         echo $result;
         curl_close($ch);
         return $result;

@@ -89,8 +89,6 @@ class rss_feed
             $data = array(
                 "type" => "text",
                 "text" => $time,
-                //"text" =>            $event['score']['fullTime']['homeTeam'] .':'.
-                //                      $event['score']['fullTime']['awayTeam'],
                 "size" => "xxs",
                 "flex" => 1,
                 "wrap" => true,
@@ -170,7 +168,8 @@ class rss_feed
     {
         $color  = '';
         $League = str_replace("fixture", "", $League);
-
+        $League = str_replace("standings", "", $League);
+        $League = str_replace("results", "", $League);
         switch ($League) {
             case "pl":
                 $color = '#3D185B';
@@ -227,6 +226,7 @@ class rss_feed
         $all_match        = array();
         $all_contents     = array();
         $date             = $current_matchday;
+        $color            = $this->_set_color($League);
         foreach ($response['matches'] as $val => $event) {
             if ($event['matchday'] != $current_matchday) {
                 continue;
@@ -242,18 +242,17 @@ class rss_feed
                 "flex" => 3,
                 "wrap" => true,
             );
-            array_push($team, $data);   
-           if ( $event['status'] == 'FINISHED') {
-            $status = $event['score']['fullTime']['homeTeam'] . ' - ' .
-                $event['score']['fullTime']['awayTeam'].' (FT)';
-           }
-           elseif ( $event['status'] == 'LIVE') {
-            $status = $event['score']['fullTime']['homeTeam'] . ' - ' .
-                $event['score']['fullTime']['awayTeam'].' (LIVE)';
-           }
-           else{
-            continue;
-           }
+            array_push($team, $data);
+            if ($event['status'] == 'FINISHED') {
+                $status = $event['score']['fullTime']['homeTeam'] . ' - ' .
+                    $event['score']['fullTime']['awayTeam'] . ' (FT)';
+            } elseif ($event['status'] == 'LIVE') {
+                $status = $event['score']['fullTime']['homeTeam'] . ' - ' .
+                    $event['score']['fullTime']['awayTeam'] . ' (LIVE)';
+            } else {
+                $status = $event['score']['fullTime']['homeTeam'] . ' - ' .
+                    $event['score']['fullTime']['awayTeam'] . ' ';
+            }
             $data = array(
                 "type"   => "text",
                 "text"   => $status,
@@ -285,7 +284,7 @@ class rss_feed
                 $contents = array(
                     'type'   => 'bubble',
                     'styles' => array(
-                        'header' => array("backgroundColor" => "#3D185B"),
+                        'header' => array("backgroundColor" => $color),
                         'footer' => array("separator" => true),
                     ),
                     'header' => array(
@@ -321,7 +320,6 @@ class rss_feed
                     ),
                 );
                 array_push($all_contents, $contents);
-
                 $all_match = array();
 
             }
@@ -333,12 +331,146 @@ class rss_feed
         );
         return $ar;
     }
-    public function test()
+    public function _get_standings($League)
     {
-                $connect_url = $GLOBALS['$baseurl'] . 'matches';
+        switch ($League) {
+            case "plstandings":
+                $connect_url = $GLOBALS['$baseurl'] . 'competitions/2021/standings';
+                $header      = 'Premier League Standings';
+                break;
+            case "uclstandings":
+                $connect_url = $GLOBALS['$baseurl'] . 'competitions/2001/standings';
+                $header      = 'UCL Standings';
+                break;
+            case "laligastandings":
+                $connect_url = $GLOBALS['$baseurl'] . 'competitions/2014/standings';
+                $header      = 'Laliga Standings';
+                break;
+            case "calciostandings":
+                $connect_url = $GLOBALS['$baseurl'] . 'competitions/2019/standings';
+                $header      = 'Calcio Serie A Standings';
+                break;
+            case "bundesligastandings":
+                $connect_url = $GLOBALS['$baseurl'] . 'competitions/2002/standings';
+                $header      = 'Bundesliga Standings';
+                break;
+        }
+        $color    = $this->_set_color($League);
+        $response = $this->request($connect_url);
+        $response = json_decode($response, true);
+        foreach ($response['standings'] as $val => $event) {
+            if ($event['type'] != 'TOTAL') {
+                continue;
+            }
+            $team = array();
+            $data = array(
+                "type"     => "box",
+                "layout"   => 'horizontal',
+                'contents' => [array(
+                    "type"   => "text",
+                    "text"   => '#',
+                    "size"   => "xs",
+                    "weight" => "bold",
+                    "flex"   => 2,
+                ),
+                    array(
+                        "type"   => "text",
+                        "text"   => 'Team',
+                        "size"   => "xs",
+                        "weight" => "bold",
+                        "flex"   => 11,
+                    ),
+                    array(
+                        "type"   => "text",
+                        "text"   => 'p',
+                        "size"   => "xs",
+                        "weight" => "bold",
+                        "flex"   => 2,
+                    ),
+                    array(
+                        "type"   => "text",
+                        "text"   => 'Pts',
+                        "size"   => "xs",
+                        "weight" => "bold",
+                        "flex"   => 3,
+                    ),
 
-        $response         = $this->request($connect_url);
-        echo $response;
-        $response         = json_decode($response, true);
+                ],
+
+            );
+            array_push($team, $data);
+            foreach ($event['table'] as $tab => $table) {
+
+                $position = array(
+                    "type"     => "box",
+                    "layout"   => "horizontal",
+                    "contents" => [
+                        array(
+                            "type" => "text",
+                            "text" => $table['position'] . '',
+                            "size" => "xxs",
+                            "flex" => 2,
+                        ),
+                        array(
+                            "type" => "text",
+                            "text" => $table['team']['name'],
+                            "size" => "xxs",
+                            "wrap" => true,
+                            "flex" => 11,
+                        ),
+                        array(
+                            "type" => "text",
+                            "text" => $table['playedGames'] . '',
+                            "size" => "xxs",
+                            "flex" => 2,
+                        ),
+                        array(
+                            "type" => "text",
+                            "text" => $table['points'] . '',
+                            "size" => "xxs",
+                            "flex" => 3,
+                        ),
+                    ],
+                    //   array("type" => "separator"),
+                );
+                array_push($team, $position);
+            }
+        }
+
+        $contents = array(
+            'type'   => 'bubble',
+            'styles' => array(
+                'header' => array("backgroundColor" => $color),
+                'body'   => array("separator" => true),
+            ),
+            'header' => array(
+                'type'     => 'box',
+                'layout'   => 'vertical',
+                'contents' => [array(
+                    "type"  => "text",
+                    'weight' => 'bold',
+                    "text"  => $header,
+                    "color" => "#ffffff",
+                )],
+            ),
+            'body'   => array(
+                'type'     => 'box',
+                'layout'   => 'vertical',
+                "spacing"  => "sm",
+                'contents' =>
+
+                $team
+
+                ,
+            ),
+        );
+
+                $ar = array(
+            "type"     => "carousel",
+            "contents" => [ $contents ],
+        );
+                 //       $ar = json_encode($ar);
+         //echo $ar;
+        return $ar;
     }
 }

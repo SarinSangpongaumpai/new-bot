@@ -2,10 +2,11 @@
 require 'constant.php';
 require_once 'rss_feed.php';
 require_once '../vendor/autoload.php';
-$text = 'plresult';
-    $rss_feed = new rss_feed;
-    $rss_feed->test();
-
+$text = 'plstandings';
+// $text = 'plresult';
+$rss_feed = new rss_feed;
+// showresultmatch($text);
+showstanding('plstandings');
 
 function set_rich($text)
 {
@@ -28,7 +29,7 @@ function set_rich($text)
     $error = 'Complete2';
     echo $error;
     if (!empty($result)) {
-        $constant = new Constant;
+        $constant      = new Constant;
         $accessToken   = 'Fm2bQMqKom+zFOHIP6SXCk9xLaJrLf+gsJWx5YB1yDqBCQ7MGrbLrv/9BpV0RK7+OxTvwhZDJJwUsxzEri9TuKebyYp/WUeMbPyJaajbVS7J0JWx6X+diGL4jF2XyMyXeWfPa//Bpth1kF3Hxs749AdB04t89/1O/w1cDnyilFU=';
         $userId        = "Ue359dced31abcf2b1bd0bd181b498cfa";
         $channelSecret = "763308ddc56b1d9ac50c1621b425cac4";
@@ -36,7 +37,7 @@ function set_rich($text)
         $bot           = new \LINE\LINEBot($httpClient, ['channelSecret' => $channelSecret]);
         echo $error;
         //$result = $constant->post_rich($result);
-        $error  = 'Complete3';
+        $error = 'Complete3';
         echo $error;
         $result = json_decode($result, true);
         $error  = 'Complete4';
@@ -50,7 +51,7 @@ function set_rich($text)
             echo $image;
         }
         $bot->unlinkRichMenu('Ue359dced31abcf2b1bd0bd181b498cfa');
-         //$bot->linkRichMenu($userId , 'richmenu-b32651d0c815684f37ba6e18fee48892');
+        //$bot->linkRichMenu($userId , 'richmenu-b32651d0c815684f37ba6e18fee48892');
         $imagePath = realpath('') . '/richmenu/' . $text . '.png';
         //$bot->uploadRichMenuImage($result['richMenuId'], $imagePath, 'image/png');
         $error = 'Complete5';
@@ -106,111 +107,18 @@ function create_rich($richmenu, $name)
     echo $result;
     return $result;
 }
-/*
-function get_result_rich(){
-$areas_all = array();
-
-$size = array(
-"width"  => 2500,
-"height" => 1686,
-);
-$count = 0;
-$fixture = array("plresult", "bundesligaresult", "laligaresult","calcioresult","uclresult","main");
-for ($j = 0; $j < 2; $j++) {
-$y = 843 * $j;
-for ($i = 0; $i < 3; $i++) {
-$x     = 843 * $i;
-$bound = array(
-"x"      => $x,
-"y"      => $y,
-"width"  => 833,
-"height" => 843,
-);
-$action = array(
-"type" => "message",
-"text" => $fixture[$count],
-);
-$count = $count  + 1;
-$areas = array(
-'bounds' => $bound,
-'action' => $action,
-);
-array_push($areas_all, $areas);
-}
-}
-
-$data = array(
-"size"        => $size,
-"selected"    => true,
-"name"        => "Fixture",
-"chatBarText" => "Foot",
-"areas"       => $areas_all,
-);
-
-$result = json_encode($data);
-echo $result;
-return $result;
-}
-
-function get_fixture_rich(){
-$areas_all = array();
-
-$size = array(
-"width"  => 2500,
-"height" => 1686,
-);
-$count = 0;
-$fixture = array("plfixture", "bundesligafixture", "laligafixture","calciofixture","uclfixture","main");
-for ($j = 0; $j < 2; $j++) {
-$y = 843 * $j;
-for ($i = 0; $i < 3; $i++) {
-$x     = 843 * $i;
-$bound = array(
-"x"      => $x,
-"y"      => $y,
-"width"  => 833,
-"height" => 843,
-);
-$action = array(
-"type" => "message",
-"text" => $fixture[$count],
-);
-$count = $count  + 1;
-$areas = array(
-'bounds' => $bound,
-'action' => $action,
-);
-array_push($areas_all, $areas);
-}
-}
-
-$data = array(
-"size"        => $size,
-"selected"    => true,
-"name"        => "Fixture",
-"chatBarText" => "Foot",
-"areas"       => $areas_all,
-);
-
-$result = json_encode($data);
-echo $result;
-
-return $result;
-}
- */
-/*
-function pushbot()
+function showstanding($League)
 {
-$userId        = 'Ue359dced31abcf2b1bd0bd181b498cfa';
-$accessToken   = 'Fm2bQMqKom+zFOHIP6SXCk9xLaJrLf+gsJWx5YB1yDqBCQ7MGrbLrv/9BpV0RK7+OxTvwhZDJJwUsxzEri9TuKebyYp/WUeMbPyJaajbVS7J0JWx6X+diGL4jF2XyMyXeWfPa//Bpth1kF3Hxs749AdB04t89/1O/w1cDnyilFU=';
-$channelSecret = "763308ddc56b1d9ac50c1621b425cac4";
-$httpClient    = new \LINE\LINEBot\HTTPClient\CurlHTTPClient($accessToken);
-$bot           = new \LINE\LINEBot($httpClient, ['channelSecret' => $channelSecret]);
-
-$bot->pushMessage($userId, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('No richmenu.'));
-
+    $constant                     = new Constant;
+    $rss_feed                     = new rss_feed;
+    $arrayContent4                = array();
+    $arrayContent4['type']        = 'flex';
+    $arrayContent4['altText']     = 'Premier League Standings';
+    $arrayContent4['contents']    = $rss_feed->_get_standings($League);
+    $arrayPostData['messages'][0] = $arrayContent4;
+    $return                       = $constant->replyMsgFlex($arrayPostData, $League);
+    echo $return;
 }
- */
 function showmatchtime($League)
 {
     $constant = new Constant;
@@ -269,21 +177,9 @@ function showresultmatch($League)
             $arrayContent4['altText'] = 'Bundesliga Match day #' . $matchday . 'result';
             break;
     }
-
     $matchtime                    = $rss_feed->_get_result($League, $arrayContent4['altText']);
     $arrayContent4['contents']    = $matchtime;
     $arrayPostData['messages'][0] = $arrayContent4;
     $return                       = $constant->replyMsgFlex($arrayPostData, $League);
     echo $return;
 }
-/*
-function pushmsg()
-{
-$constant                             = new Constant;
-$arrayPostData['to']                  = 'Ue359dced31abcf2b1bd0bd181b498cfa';
-$arrayPostData['messages'][0]['type'] = "text";
-$arrayPostData['messages'][0]['text'] = 'Eiei';
-$return                               = $constant->pushMsg($arrayPostData);
-
-}
- */

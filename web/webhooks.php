@@ -12,10 +12,6 @@ $constant = new Constant;
 $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient($constant->get_token());
 $bot        = new \LINE\LINEBot($httpClient, ['channelSecret' => $constant->get_secret()]);
 
-
-
-
-
 if (!is_null($events['events'])) {
     // Loop through each event
     foreach ($events['events'] as $event) {
@@ -59,30 +55,59 @@ if (!is_null($events['events'])) {
                     $arrayPostData = json_encode($data);
                     $constant->default_send($arrayPostData);
                 }
-            } 
-
-            elseif ($text == 'main') {
-                $bot->linkRichMenu($userid , 'richmenu-b32651d0c815684f37ba6e18fee48892');
-                //$bot->linkRich('Ue359dced31abcf2b1bd0bd181b498cfa','richmenu-b32651d0c815684f37ba6e18fee48892');
-            } 
-            /*elseif ($text == 'ballfix') {
-                $richmenu = array("plfixture", "bundesligafixture", "laligafixture", "calciofixture", "uclfixture", "main");
-                $result   = create_rich($richmenu, 'fixture');
-                if (!empty($result)) {
-                    $result = $constant->post_rich($result);
-                    $result = json_decode($result, true);
-                    $bot->uploadRichMenuImage($result['richMenuId'], realpath('') . '/richmenu/' . $text . '.png', 'image/png');
-                    $bot->linkRichMenu($userid, $result['richMenuId']);
+            } elseif (strpos($text, 'standings') !== false) {
+                $return = showstandings($text);
+                if ($return == 'Error') {
+                    $messages = [
+                        'type' => 'text',
+                        'text' => 'No standings to display',
+                    ];
+                    //Make a POST Request to Messaging API to reply to sender
+                    $data = [
+                        'replyToken' => $replyToken,
+                        'messages'   => [$messages],
+                    ];
+                    $arrayPostData = json_encode($data);
+                    $constant->default_send($arrayPostData);
                 }
+            } elseif ($text == 'main') {
+                $bot->linkRichMenu($userid, 'richmenu-b32651d0c815684f37ba6e18fee48892');
+                //$bot->linkRich('Ue359dced31abcf2b1bd0bd181b498cfa','richmenu-b32651d0c815684f37ba6e18fee48892');
             }
-            */
-             else {
+            else {
                 $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('HI'));
             }
         }
     }
 }
-
+function showstanding($League)
+{
+    $constant              = new Constant;
+    $rss_feed              = new rss_feed;
+    $arrayContent4         = array();
+    $arrayContent4['type'] = 'flex';
+    switch ($text) {
+        case 'plstandings':
+            $arrayContent4['altText'] = 'Premier League Standings';
+            break;
+        case 'uclstandings':
+            $arrayContent4['altText'] = 'UCL Standings';
+            break;
+        case 'calciostandings':
+            $arrayContent4['altText'] = 'Calcio Standings';
+            break;
+        case 'bundesligastandings':
+            $arrayContent4['altText'] = 'Bundesliga Standings';
+            break;
+        case 'laligastandings':
+            $arrayContent4['altText'] = 'Laliga Standings';
+            break;
+    }
+    $arrayContent4['contents']    = $rss_feed->_get_standings($League);
+    $arrayPostData['messages'][0] = $arrayContent4;
+    $return                       = $constant->replyMsgFlex($arrayPostData, $League);
+    echo $return;
+}
 function set_rich($text)
 {
     $error = 'Complete';
@@ -224,4 +249,4 @@ function showresultmatch($League)
     $return                       = $constant->replyMsgFlex($arrayPostData, $League);
     echo $return;
 }
-echo 'version 2.5';
+echo 'version 2.6';
