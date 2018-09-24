@@ -169,7 +169,7 @@ class rss_feed
         $color  = '';
         $League = str_replace("fixture", "", $League);
         $League = str_replace("standings", "", $League);
-        $League = str_replace("results", "", $League);
+        $League = str_replace("result", "", $League);
         switch ($League) {
             case "pl":
                 $color = '#3D185B';

@@ -80,7 +80,7 @@ if (!is_null($events['events'])) {
         }
     }
 }
-function showstanding($League)
+function showstandings($League)
 {
     $constant              = new Constant;
     $rss_feed              = new rss_feed;
@@ -249,4 +249,4 @@ function showresultmatch($League)
     $return                       = $constant->replyMsgFlex($arrayPostData, $League);
     echo $return;
 }
-echo 'version 2.6';
+echo 'version 2.7';
