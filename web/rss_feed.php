@@ -44,31 +44,29 @@ class rss_feed
     {
 
         switch ($League) {
-            case "plfixture":
+            case (strpos($League, 'pl') !== false):
                 $connect_url = $GLOBALS['$baseurl'] . 'competitions/2021/matches';
                 break;
-            case "uclfixture":
+            case (strpos($League, 'ucl') !== false):
                 $connect_url = $GLOBALS['$baseurl'] . 'competitions/2001/matches';
                 break;
-            case "laligafixture":
+            case (strpos($League, 'laliga') !== false):
                 $connect_url = $GLOBALS['$baseurl'] . 'competitions/2014/matches';
                 break;
-            case "calciofixture":
+            case (strpos($League, 'calcio') !== false):
                 $connect_url = $GLOBALS['$baseurl'] . 'competitions/2019/matches';
                 break;
-            case "bundesligafixture":
+            case (strpos($League, 'bundesliga') !== false):
                 $connect_url = $GLOBALS['$baseurl'] . 'competitions/2002/matches';
                 break;
         }
-
         $response         = $this->request($connect_url);
         $response         = json_decode($response, true);
-        $current_matchday = $this->_get_current_matchday();
+        
+        $current_matchday = $this->_get_current_matchday($League);
         $all_match        = array();
         $all_contents     = array();
-
         foreach ($response['matches'] as $val => $event) {
-            //echo  $this->set_time_zone($response['matches'][$val + 1]['utcDate'],3);
             if ($event['matchday'] != $current_matchday) {
                 continue;
             }
@@ -166,30 +164,31 @@ class rss_feed
     }
     public function _set_color($League)
     {
-        $color  = '';
-        $League = str_replace("fixture", "", $League);
-        $League = str_replace("standings", "", $League);
-        $League = str_replace("result", "", $League);
+        //$color  = '';
+        //$League = str_replace("fixture", "", $League);
+        //$League = str_replace("standings", "", $League);
+        //$League = str_replace("result", "", $League);
         switch ($League) {
-            case "pl":
+            case (strpos($League, 'pl') !== false):
                 $color = '#3D185B';
                 break;
-            case "ucl":
+            case (strpos($League, 'ucl') !== false):
                 $color = '#231F20';
                 break;
-            case "laliga":
+            case (strpos($League, 'laliga') !== false):
                 $color = '#FF7D01';
                 break;
-            case "calcio":
+            case (strpos($League, 'calcio') !== false):
                 $color = '#D20514';
                 break;
-            case "bundesliga":
+            case (strpos($League, 'bundesliga') !== false):
                 $color = '#098D37';
                 break;
         }
+
         return $color;
     }
-    public function _get_current_matchday()
+    public function _get_current_matchday($League)
     {
         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2021/';
         $response    = $this->request($connect_url);
@@ -197,32 +196,41 @@ class rss_feed
         if (!is_numeric($response['currentSeason']['currentMatchday'])) {
             return '1';
         } else {
+        $exact_match = preg_replace('/\D/', '', $League);
+        if ($exact_match > 0) {
+            $response['currentSeason']['currentMatchday'] = $exact_match;
+        }
             return $current_matchday = $response['currentSeason']['currentMatchday'];
         }
     }
     public function _get_result($League)
     {
         switch ($League) {
-            case "plresult":
+            case (strpos($League, 'pl') !== false):
                 $connect_url = $GLOBALS['$baseurl'] . 'competitions/2021/matches';
+                $header = "Premier League Match Result #";
                 break;
-            case "uclresult":
+            case (strpos($League, 'ucl') !== false):
                 $connect_url = $GLOBALS['$baseurl'] . 'competitions/2001/matches';
+                $header = "UCL Match Result#";
                 break;
-            case "laligaresult":
+            case (strpos($League, 'laliga') !== false):
                 $connect_url = $GLOBALS['$baseurl'] . 'competitions/2014/matches';
+                $header = "Laliga Match Result #";
                 break;
-            case "calcioresult":
+            case (strpos($League, 'calcio') !== false):
                 $connect_url = $GLOBALS['$baseurl'] . 'competitions/2019/matches';
+                $header = "Calcio Match Result #";
                 break;
-            case "bundesligaresult":
+            case (strpos($League, 'bundesliga') !== false):
                 $connect_url = $GLOBALS['$baseurl'] . 'competitions/2002/matches';
+                $header = "Bundesliga Match Result #";
                 break;
         }
 
         $response         = $this->request($connect_url);
         $response         = json_decode($response, true);
-        $current_matchday = $this->_get_current_matchday();
+        $current_matchday = $this->_get_current_matchday($League);
         $all_match        = array();
         $all_contents     = array();
         $date             = $current_matchday;
@@ -250,8 +258,7 @@ class rss_feed
                 $status = $event['score']['fullTime']['homeTeam'] . ' - ' .
                     $event['score']['fullTime']['awayTeam'] . ' (LIVE)';
             } else {
-                $status = $event['score']['fullTime']['homeTeam'] . ' - ' .
-                    $event['score']['fullTime']['awayTeam'] . ' ';
+                $status = '0-0 (PRE)';
             }
             $data = array(
                 "type"   => "text",
@@ -293,7 +300,7 @@ class rss_feed
                         'contents' => [array(
                             "type"   => "text",
                             "weight" => "bold",
-                            "text"   => "Premier League Matchday #" . $current_matchday,
+                            "text"   => $header . $current_matchday,
                             "color"  => "#ffffff",
                         )],
                     ),
@@ -334,23 +341,23 @@ class rss_feed
     public function _get_standings($League)
     {
         switch ($League) {
-            case "plstandings":
+            case (strpos($League, 'pl') !== false):
                 $connect_url = $GLOBALS['$baseurl'] . 'competitions/2021/standings';
                 $header      = 'Premier League Standings';
                 break;
-            case "uclstandings":
+            case (strpos($League, 'ucl') !== false):
                 $connect_url = $GLOBALS['$baseurl'] . 'competitions/2001/standings';
                 $header      = 'UCL Standings';
                 break;
-            case "laligastandings":
+            case (strpos($League, 'laliga') !== false):
                 $connect_url = $GLOBALS['$baseurl'] . 'competitions/2014/standings';
                 $header      = 'Laliga Standings';
                 break;
-            case "calciostandings":
+            case (strpos($League, 'calcio') !== false):
                 $connect_url = $GLOBALS['$baseurl'] . 'competitions/2019/standings';
                 $header      = 'Calcio Serie A Standings';
                 break;
-            case "bundesligastandings":
+            case (strpos($League, 'bundesliga') !== false):
                 $connect_url = $GLOBALS['$baseurl'] . 'competitions/2002/standings';
                 $header      = 'Bundesliga Standings';
                 break;
@@ -447,10 +454,10 @@ class rss_feed
                 'type'     => 'box',
                 'layout'   => 'vertical',
                 'contents' => [array(
-                    "type"  => "text",
+                    "type"   => "text",
                     'weight' => 'bold',
-                    "text"  => $header,
-                    "color" => "#ffffff",
+                    "text"   => $header,
+                    "color"  => "#ffffff",
                 )],
             ),
             'body'   => array(
@@ -465,12 +472,13 @@ class rss_feed
             ),
         );
 
-                $ar = array(
+        $ar = array(
             "type"     => "carousel",
-            "contents" => [ $contents ],
+            "contents" => [$contents],
         );
-                 //       $ar = json_encode($ar);
-         //echo $ar;
+        //       $ar = json_encode($ar);
+        //echo $ar;
         return $ar;
     }
+
 }
