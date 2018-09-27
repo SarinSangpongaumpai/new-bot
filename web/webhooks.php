@@ -183,7 +183,7 @@ function showresultmatch($League)
 }
 
 
-echo 'version 2.9.1';
+echo 'version 2.9.2';
 
 
 function set_rich($text)
@@ -231,7 +231,7 @@ function set_rich($text)
         }
         $bot->unlinkRichMenu('Ue359dced31abcf2b1bd0bd181b498cfa');
         $bot->linkRichMenu($userId , 'richmenu-b32651d0c815684f37ba6e18fee48892');
-        $imagePath = realpath('') . '/richmenu/' . $text . '.png';
+        $imagePath = 'https://app-newbot.herokuapp.com/web/richmenu/' . $text . '.png';
         $bot->uploadRichMenuImage($result['richMenuId'], $imagePath, 'image/png');
         $error = 'Complete5';
         echo $error;
