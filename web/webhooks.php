@@ -12,7 +12,6 @@ $constant = new Constant;
 
 $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient($constant->get_token());
 $bot        = new \LINE\LINEBot($httpClient, ['channelSecret' => $constant->get_secret()]);
-
 if (!is_null($events['events'])) {
     // Loop through each event
     foreach ($events['events'] as $event) {
@@ -72,7 +71,7 @@ if (!is_null($events['events'])) {
                     $constant->default_send($arrayPostData);
                 }
             } elseif (strpos($text, 'kingsmanga') !== false) {
-                $return = show_cartoon($text);
+                $return = show_cartoon();
                 if ($return == 'Error') {
                     $messages = [
                         'type' => 'text',
@@ -260,4 +259,4 @@ function showresultmatch($League)
 //     echo $result;
 //     return $result;
 // }
-echo 'version 2.8';
+echo 'version 2.9';

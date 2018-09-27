@@ -208,8 +208,8 @@ class cartoon_feed
             "type"     => "carousel",
             "contents" => $all,
         );
-        $ar = json_encode($ar);
-        echo $ar;
+        //$ar = json_encode($ar);
+        //echo $ar;
         return $ar;
 
     }

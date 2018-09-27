@@ -1,12 +1,30 @@
 <?php
 require 'constant.php';
 require_once 'rss_feed.php';
+require_once 'cartoon_feed.php';
 require_once '../vendor/autoload.php';
-$text = 'plstandings';
-// $text = 'plresult';
+//$rss_feed = new cartoon_feed;
+ //show_cartoon('nanatsu-no-taizai');
 $rss_feed = new rss_feed;
-// showresultmatch($text);
-showstanding('plstandings');
+$rss_feed->_get_match('tt','tt');
+
+
+
+function show_cartoon($cartoon)
+{
+    $constant                     = new Constant;
+    $rss_feed                     = new cartoon_feed;
+    $arrayContent4                = array();
+    $arrayContent4['type']        = 'flex';
+    $arrayContent4['altText']     = 'Kingsmanga';
+     $arrayContent4['contents']    = $rss_feed->_get_cartoon();
+      $arrayPostData['messages'][0] = $arrayContent4;
+      $return                       = $constant->replyMsgFlex($arrayPostData);
+     echo $return;
+}
+
+
+
 
 function set_rich($text)
 {
@@ -116,7 +134,7 @@ function showstanding($League)
     $arrayContent4['altText']     = 'Premier League Standings';
     $arrayContent4['contents']    = $rss_feed->_get_standings($League);
     $arrayPostData['messages'][0] = $arrayContent4;
-    $return                       = $constant->replyMsgFlex($arrayPostData, $League);
+    $return                       = $constant->replyMsgFlex($arrayPostData);
     echo $return;
 }
 function showmatchtime($League)
@@ -148,7 +166,7 @@ function showmatchtime($League)
     $matchtime                    = $rss_feed->_get_match($League, $arrayContent4['altText']);
     $arrayContent4['contents']    = $matchtime;
     $arrayPostData['messages'][0] = $arrayContent4;
-    $return                       = $constant->replyMsgFlex($arrayPostData, $League);
+    $return                       = $constant->replyMsgFlex($arrayPostData);
     echo $return;
 }
 
@@ -180,6 +198,6 @@ function showresultmatch($League)
     $matchtime                    = $rss_feed->_get_result($League, $arrayContent4['altText']);
     $arrayContent4['contents']    = $matchtime;
     $arrayPostData['messages'][0] = $arrayContent4;
-    $return                       = $constant->replyMsgFlex($arrayPostData, $League);
+    $return                       = $constant->replyMsgFlex($arrayPostData);
     echo $return;
 }
