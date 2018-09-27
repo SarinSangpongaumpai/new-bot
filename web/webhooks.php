@@ -143,24 +143,43 @@ function show_cartoon()
     $return                       = $constant->replyMsgFlex($arrayPostData);
     echo $return;
 }
-
-function showstandings($League)
+function showstanding($League)
 {
-    $constant      = new Constant;
-    $rss_feed      = new rss_feed;
-    $arrayContent4 = set_header_flex($League, array());
-    $arrayContent4['contents']    = $rss_feed->_get_standings($League,$arrayContent4['altText']);
+    $constant                     = new Constant;
+    $rss_feed                     = new rss_feed;
+    $arrayContent4                = array();
+    $arrayContent4['type']        = 'flex';
+    $arrayContent4['altText']     = 'Premier League Standings';
+    $arrayContent4['contents']    = $rss_feed->_get_standings($League);
     $arrayPostData['messages'][0] = $arrayContent4;
     $return                       = $constant->replyMsgFlex($arrayPostData);
     echo $return;
 }
 function showmatchtime($League)
 {
-    $constant      = new Constant;
-    $rss_feed      = new rss_feed;
-    $arrayContent4 = set_header_flex($League, array());
+    $constant = new Constant;
+    $rss_feed = new rss_feed;
+    $matchday = $rss_feed->_get_current_matchday($League);
+    $arrayContent4         = array();
+    $arrayContent4['type'] = 'flex';
+    switch ($League) {
+        case "plfixture":
+            $arrayContent4['altText'] = 'Premier League Match day #' . $matchday;
+            break;
+        case "uclfixture":
+            $arrayContent4['altText'] = 'Uefa champions league Match day #' . $matchday;
+            break;
+        case "laligafixture":
+            $arrayContent4['altText'] = 'La Liga Match day #' . $matchday;
+            break;
+        case "calciofixture":
+            $arrayContent4['altText'] = 'Serie A Match day #' . $matchday;
+            break;
+        case "bundesligafixture":
+            $arrayContent4['altText'] = 'Bundesliga Match day #' . $matchday;
+            break;
+    }
 
-    $arrayContent4['altText']     = $arrayContent4['altText'] .' #'. $rss_feed->_get_current_matchday($League);
     $matchtime                    = $rss_feed->_get_match($League, $arrayContent4['altText']);
     $arrayContent4['contents']    = $matchtime;
     $arrayPostData['messages'][0] = $arrayContent4;
@@ -170,11 +189,29 @@ function showmatchtime($League)
 
 function showresultmatch($League)
 {
-    $constant                 = new Constant;
-    $rss_feed                 = new rss_feed;
-    $arrayContent4            = set_header_flex($League, array());
-    $arrayContent4['altText'] = $arrayContent4['altText'] .' #'. $rss_feed->_get_current_matchday($League);
+    $constant = new Constant;
+    $rss_feed = new rss_feed;
+    $matchday = $rss_feed->_get_current_matchday($League);
 
+    $arrayContent4         = array();
+    $arrayContent4['type'] = 'flex';
+    switch ($League) {
+        case "plresult":
+            $arrayContent4['altText'] = 'Premier League Match day #' . $matchday . 'result';
+            break;
+        case "uclresult":
+            $arrayContent4['altText'] = 'Uefa champions league Match day #' . $matchday . 'result';
+            break;
+        case "laligaresult":
+            $arrayContent4['altText'] = 'La Liga Match day #' . $matchday . 'result';
+            break;
+        case "calcioresult":
+            $arrayContent4['altText'] = 'Serie A Match day #' . $matchday . 'result';
+            break;
+        case "bundesligaresult":
+            $arrayContent4['altText'] = 'Bundesliga Match day #' . $matchday . 'result';
+            break;
+    }
     $matchtime                    = $rss_feed->_get_result($League, $arrayContent4['altText']);
     $arrayContent4['contents']    = $matchtime;
     $arrayPostData['messages'][0] = $arrayContent4;
@@ -183,6 +220,6 @@ function showresultmatch($League)
 }
 
 
-echo 'version 2.9.3';
+echo 'version 2.9.4';
 
 

@@ -2,6 +2,17 @@
 
 class cartoon_feed
 {
+    public $catoon = array();
+
+    public function __constructor()
+    {
+        $this->clubID = $clubID;
+    }
+
+    public function populateCartoon()
+    {
+        $this->cartoon_item['One Piece'] = 'one-piece';
+    }
     public function _get_feed($cartoon)
     {
         switch ($cartoon) {
@@ -115,7 +126,7 @@ class cartoon_feed
                 case '6':
                     $image = $image . "boku-no-hero-academia.png";
                     break;
-                                    case '7':
+                case '7':
                     $image = $image . "a-wild-last-boss-appeared.png";
                     break;
             }
@@ -236,9 +247,30 @@ class cartoon_feed
                 $iTitle[$key]   = strip_tags(substr($value, strpos($value, "<title>"), strpos($value, "</title>")));
                 $iLink[$key]    = strip_tags(substr($value, strpos($value, "<link>"), strpos($value, "</link>") - strpos($value, "<link>")));
                 $ipubDate[$key] = strip_tags(substr($value, strpos($value, "<pubDate>"), strpos($value, "</pubDate>") - strpos($value, "<pubDate>")));
-                $ipubDate[$key] = str_replace("+00000", '', $ipubDate[$key]);
+                $ipubDate[$key] = str_replace("+0000", '', $ipubDate[$key]);
                 echo $iTitle[$key];
+                //     switch ($iTitle[$key]) {
+                // case (strpos($iTitle[$key]), 'One Piece') !== false):
+                //                break;
+                // case (strpos($iTitle[$key]), 'Nanatsu no Taizai') !== false):
+                //                break;
+                //            case '3':
+                //                $header        = 'One Punch Man';
+                //                break;
+                //            case '4':
+                //                $header        = 'Dr. Stone';
+                //                break;
+                //            case '5':
+                //                $header        = 'Shokugeki no Soma';
+                //                break;
+                //            case '6':
+                //                $header        = 'Boku no Hero Academia';
+                //                break;
+                //            case '7':
+                //                $header        = 'A Wild Last Boss Appeared!';
+                //                break;
 
+                //        }
                 $data = array(
                     "type"     => "box",
                     "layout"   => 'horizontal',
@@ -324,5 +356,12 @@ class cartoon_feed
         }
         return $contents;
     }
-
+    public function set_cartoon($text)
+    {
+        $this->cartoon_item[$text];
+       // switch ($text) {
+       //      case (strpos($text, 'pl') !== false):
+       //      break;
+       //  }
+    }
 }

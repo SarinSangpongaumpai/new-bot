@@ -66,7 +66,7 @@ class rss_feed
 
         // }
 
-        $League_name = strstr($League, 'result', true);
+        $League_name = strstr($League, 'fixture', true);
         if (isset($GLOBALS[$League_name])) {
             $connect_url = $GLOBALS['$baseurl'] . 'competitions/' . $GLOBALS[$League_name] . '/matches';
         } else {
@@ -380,7 +380,7 @@ class rss_feed
         //         $header      = 'Bundesliga Standings';
         //         break;
         // }
-        $League_name = strstr($League, 'result', true);
+        $League_name = strstr($League, 'standing', true);
         if (isset($GLOBALS[$League_name])) {
             $connect_url = $GLOBALS['$baseurl'] . 'competitions/' . $GLOBALS[$League_name] . '/standings';
         } else {

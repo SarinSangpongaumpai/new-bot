@@ -3,11 +3,10 @@ require 'constant.php';
 require_once 'rss_feed.php';
 require_once 'cartoon_feed.php';
 require_once '../vendor/autoload.php';
-//$rss_feed = new cartoon_feed;
-//show_cartoon('nanatsu-no-taizai');
-// $rss_feed = new rss_feed;
-// $rss_feed->_get_match('plresult','tt');
-set_rich('ballresult');
+// $rss_feed = new cartoon_feed;
+// show_cartoon();
+$rss_feed = new rss_feed;
+showmatchtime('plfixture');
 function show_cartoon($cartoon)
 {
     $constant                     = new Constant;
@@ -70,7 +69,7 @@ function set_rich($text)
         $bot->uploadRichMenuImage($result['richMenuId'], $imagePath, 'image/png');
         $error = 'Complete5';
         echo $error;
-        $bot->linkRichMenu('Ue359dced31abcf2b1bd0bd181b498cfa', $result['richMenuId']);
+        //$bot->linkRichMenu('Ue359dced31abcf2b1bd0bd181b498cfa', $result['richMenuId']);
     } else {
         $error = 'No';
         echo $error;
@@ -137,8 +136,7 @@ function showmatchtime($League)
 {
     $constant = new Constant;
     $rss_feed = new rss_feed;
-    $matchday = $rss_feed->_get_current_matchday();
-
+    $matchday = $rss_feed->_get_current_matchday($League);
     $arrayContent4         = array();
     $arrayContent4['type'] = 'flex';
     switch ($League) {
@@ -170,7 +168,7 @@ function showresultmatch($League)
 {
     $constant = new Constant;
     $rss_feed = new rss_feed;
-    $matchday = $rss_feed->_get_current_matchday();
+    $matchday = $rss_feed->_get_current_matchday($League);
 
     $arrayContent4         = array();
     $arrayContent4['type'] = 'flex';
