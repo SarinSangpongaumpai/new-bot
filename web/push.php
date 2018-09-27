@@ -5,9 +5,9 @@ require_once 'cartoon_feed.php';
 require_once '../vendor/autoload.php';
 //$rss_feed = new cartoon_feed;
 //show_cartoon('nanatsu-no-taizai');
-$rss_feed = new rss_feed;
-// $rss_feed->_get_match('tt','tt');
-set_rich('main');
+// $rss_feed = new rss_feed;
+// $rss_feed->_get_match('plresult','tt');
+set_rich('ballresult');
 function show_cartoon($cartoon)
 {
     $constant                     = new Constant;
@@ -50,7 +50,7 @@ function set_rich($text)
         $httpClient    = new \LINE\LINEBot\HTTPClient\CurlHTTPClient($accessToken);
         $bot           = new \LINE\LINEBot($httpClient, ['channelSecret' => $channelSecret]);
         echo $error;
-        //$result = $constant->post_rich($result);
+        $result = $constant->post_rich($result);
         $error = 'Complete3';
         echo $error;
         $result = json_decode($result, true);
@@ -67,10 +67,10 @@ function set_rich($text)
         $bot->unlinkRichMenu('Ue359dced31abcf2b1bd0bd181b498cfa');
         //$bot->linkRichMenu($userId , 'richmenu-b32651d0c815684f37ba6e18fee48892');
         $imagePath = realpath('') . '/richmenu/' . $text . '.png';
-        //$bot->uploadRichMenuImage($result['richMenuId'], $imagePath, 'image/png');
+        $bot->uploadRichMenuImage($result['richMenuId'], $imagePath, 'image/png');
         $error = 'Complete5';
         echo $error;
-        //$bot->linkRichMenu('Ue359dced31abcf2b1bd0bd181b498cfa', $result['richMenuId']);
+        $bot->linkRichMenu('Ue359dced31abcf2b1bd0bd181b498cfa', $result['richMenuId']);
     } else {
         $error = 'No';
         echo $error;
@@ -118,7 +118,7 @@ function create_rich($richmenu, $name)
     );
 
     $result = json_encode($data);
-    echo $result;
+    //echo $result;
     return $result;
 }
 function showstanding($League)

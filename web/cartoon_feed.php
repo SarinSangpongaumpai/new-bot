@@ -49,7 +49,7 @@ class cartoon_feed
                 break;
             case '7':
                 $url           = "http://www.kingsmanga.net/manga/a-wild-last-boss-appeared/";
-                $header        = 'Boku no Hero Academia';
+                $header        = 'A Wild Last Boss Appeared!';
                 $search_string = '/อ่าน A Wild Last Boss Appeared!(.+?)">/';
                 $search_item   = '/อ่าน A Wild Last Boss Appeared! (.+?)</';
                 $link          = 'a-wild-last-boss-appeared-';

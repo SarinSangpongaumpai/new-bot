@@ -1,6 +1,10 @@
 <?php
-$GLOBALS['$baseurl'] = 'http://api.football-data.org/v2/';
-
+$GLOBALS['$baseurl']   = 'http://api.football-data.org/v2/';
+$GLOBALS['pl']         = '2021';
+$GLOBALS['ucl']        = '2001';
+$GLOBALS['laliga']     = '2014';
+$GLOBALS['calcio']     = '2019';
+$GLOBALS['bundesliga'] = '2002';
 class rss_feed
 {
     public function set_time_zone($dateWithTimeZone, $flag)
@@ -40,30 +44,38 @@ class rss_feed
         return $response = curl_exec($curl);
     }
 
-    public function _get_match($League, $matchname)
+    public function _get_match($League, $header)
     {
 
-        switch ($League) {
-            case (strpos($League, 'pl') !== false):
-                $connect_url = $GLOBALS['$baseurl'] . 'competitions/2021/matches';
-                break;
-            case (strpos($League, 'ucl') !== false):
-                $connect_url = $GLOBALS['$baseurl'] . 'competitions/2001/matches';
-                break;
-            case (strpos($League, 'laliga') !== false):
-                $connect_url = $GLOBALS['$baseurl'] . 'competitions/2014/matches';
-                break;
-            case (strpos($League, 'calcio') !== false):
-                $connect_url = $GLOBALS['$baseurl'] . 'competitions/2019/matches';
-                break;
-            case (strpos($League, 'bundesliga') !== false):
-                $connect_url = $GLOBALS['$baseurl'] . 'competitions/2002/matches';
-                break;
+        // switch ($League) {
+        //     case (strpos($League, 'pl') !== false):
+        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2021/matches';
+        //         break;
+        //     case (strpos($League, 'ucl') !== false):
+        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2001/matches';
+        //         break;
+        //     case (strpos($League, 'laliga') !== false):
+        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2014/matches';
+        //         break;
+        //     case (strpos($League, 'calcio') !== false):
+        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2019/matches';
+        //         break;
+        //     case (strpos($League, 'bundesliga') !== false):
+        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2002/matches';
+        //         break;
 
+        // }
+
+        $League_name = strstr($League, 'result', true);
+        if (isset($GLOBALS[$League_name])) {
+            $connect_url = $GLOBALS['$baseurl'] . 'competitions/' . $GLOBALS[$League_name] . '/matches';
+        } else {
+            return;
         }
-        $response         = $this->request($connect_url);
-        $response         = json_decode($response, true);
-        
+
+        //$response         = $this->request($connect_url);
+        $response = json_decode($this->request($connect_url), true);
+
         $current_matchday = $this->_get_current_matchday($League);
         $all_match        = array();
         $all_contents     = array();
@@ -71,7 +83,8 @@ class rss_feed
             if ($event['matchday'] != $current_matchday) {
                 continue;
             }
-            $color                     = $this->_set_color($League);
+            $color = $this->_set_color($League);
+            //Get time zone format HH:MM
             $time                      = $this->set_time_zone($event['utcDate'], 2);
             $event['awayTeam']['name'] = str_replace('FC', '', $event['awayTeam']['name']);
             $event['homeTeam']['name'] = str_replace('FC', '', $event['homeTeam']['name']);
@@ -124,7 +137,7 @@ class rss_feed
                         'contents' => [array(
                             "type"   => "text",
                             "weight" => "bold",
-                            "text"   => $matchname,
+                            "text"   => $header,
                             "color"  => "#ffffff",
                         )],
                     ),
@@ -161,14 +174,12 @@ class rss_feed
             "type"     => "carousel",
             "contents" => $all_contents,
         );
+        //$this->_for_test($ar);
         return $ar;
     }
+
     public function _set_color($League)
     {
-        //$color  = '';
-        //$League = str_replace("fixture", "", $League);
-        //$League = str_replace("standings", "", $League);
-        //$League = str_replace("result", "", $League);
         switch ($League) {
             case (strpos($League, 'pl') !== false):
                 $color = '#3D185B';
@@ -197,40 +208,45 @@ class rss_feed
         if (!is_numeric($response['currentSeason']['currentMatchday'])) {
             return '1';
         } else {
-        $exact_match = preg_replace('/\D/', '', $League);
-        if ($exact_match > 0) {
-            $response['currentSeason']['currentMatchday'] = $exact_match;
-        }
+            $exact_match = preg_replace('/\D/', '', $League);
+            if ($exact_match > 0) {
+                $response['currentSeason']['currentMatchday'] = $exact_match;
+            }
             return $current_matchday = $response['currentSeason']['currentMatchday'];
         }
     }
-    public function _get_result($League ,  $matchname)
+    public function _get_result($League, $header)
     {
-        switch ($League) {
-            case (strpos($League, 'pl') !== false):
-                $connect_url = $GLOBALS['$baseurl'] . 'competitions/2021/matches';
-                // $header = "Premier League Result #";
-                break;
-            case (strpos($League, 'ucl') !== false):
-                $connect_url = $GLOBALS['$baseurl'] . 'competitions/2001/matches';
-                // $header = "UCL Result #";
-                break;
-            case (strpos($League, 'laliga') !== false):
-                $connect_url = $GLOBALS['$baseurl'] . 'competitions/2014/matches';
-                // $header = "Laliga Result #";
-                break;
-            case (strpos($League, 'calcio') !== false):
-                $connect_url = $GLOBALS['$baseurl'] . 'competitions/2019/matches';
-                // $header = "Calcio Result #";
-                break;
-            case (strpos($League, 'bundesliga') !== false):
-                $connect_url = $GLOBALS['$baseurl'] . 'competitions/2002/matches';
-                // $header = "Bundesliga Result #";
-                break;
+        // switch ($League) {
+        //     case (strpos($League, 'pl') !== false):
+        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2021/matches';
+        //         // $header = "Premier League Result #";
+        //         break;
+        //     case (strpos($League, 'ucl') !== false):
+        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2001/matches';
+        //         // $header = "UCL Result #";
+        //         break;
+        //     case (strpos($League, 'laliga') !== false):
+        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2014/matches';
+        //         // $header = "Laliga Result #";
+        //         break;
+        //     case (strpos($League, 'calcio') !== false):
+        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2019/matches';
+        //         // $header = "Calcio Result #";
+        //         break;
+        //     case (strpos($League, 'bundesliga') !== false):
+        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2002/matches';
+        //         // $header = "Bundesliga Result #";
+        //         break;
+        // }
+        $League_name = strstr($League, 'result', true);
+        if (isset($GLOBALS[$League_name])) {
+            $connect_url = $GLOBALS['$baseurl'] . 'competitions/' . $GLOBALS[$League_name] . '/matches';
+        } else {
+            return;
         }
-
-        $response         = $this->request($connect_url);
-        $response         = json_decode($response, true);
+        // $response         = $this->request($connect_url);
+        $response         = json_decode($this->request($connect_url), true);
         $current_matchday = $this->_get_current_matchday($League);
         $all_match        = array();
         $all_contents     = array();
@@ -302,7 +318,7 @@ class rss_feed
                             "type"   => "text",
                             "weight" => "bold",
                             // "text"   => $header . $current_matchday,
-                            "text"   => $matchname,
+                            "text"   => $header,
                             "color"  => "#ffffff",
                         )],
                     ),
@@ -340,33 +356,39 @@ class rss_feed
         );
         return $ar;
     }
-    public function _get_standings($League)
+    public function _get_standings($League, $header)
     {
-        switch ($League) {
-            case (strpos($League, 'pl') !== false):
-                $connect_url = $GLOBALS['$baseurl'] . 'competitions/2021/standings';
-                $header      = 'Premier League Standings';
-                break;
-            case (strpos($League, 'ucl') !== false):
-                $connect_url = $GLOBALS['$baseurl'] . 'competitions/2001/standings';
-                $header      = 'UCL Standings';
-                break;
-            case (strpos($League, 'laliga') !== false):
-                $connect_url = $GLOBALS['$baseurl'] . 'competitions/2014/standings';
-                $header      = 'Laliga Standings';
-                break;
-            case (strpos($League, 'calcio') !== false):
-                $connect_url = $GLOBALS['$baseurl'] . 'competitions/2019/standings';
-                $header      = 'Calcio Serie A Standings';
-                break;
-            case (strpos($League, 'bundesliga') !== false):
-                $connect_url = $GLOBALS['$baseurl'] . 'competitions/2002/standings';
-                $header      = 'Bundesliga Standings';
-                break;
+        // switch ($League) {
+        //     case (strpos($League, 'pl') !== false):
+        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2021/standings';
+        //         $header      = 'Premier League Standings';
+        //         break;
+        //     case (strpos($League, 'ucl') !== false):
+        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2001/standings';
+        //         $header      = 'UCL Standings';
+        //         break;
+        //     case (strpos($League, 'laliga') !== false):
+        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2014/standings';
+        //         $header      = 'Laliga Standings';
+        //         break;
+        //     case (strpos($League, 'calcio') !== false):
+        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2019/standings';
+        //         $header      = 'Calcio Serie A Standings';
+        //         break;
+        //     case (strpos($League, 'bundesliga') !== false):
+        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2002/standings';
+        //         $header      = 'Bundesliga Standings';
+        //         break;
+        // }
+        $League_name = strstr($League, 'result', true);
+        if (isset($GLOBALS[$League_name])) {
+            $connect_url = $GLOBALS['$baseurl'] . 'competitions/' . $GLOBALS[$League_name] . '/standings';
+        } else {
+            return;
         }
-        $color    = $this->_set_color($League);
-        $response = $this->request($connect_url);
-        $response = json_decode($response, true);
+        $color = $this->_set_color($League);
+        // $response = $this->request($connect_url);
+        $response = json_decode($this->request($connect_url), true);
         foreach ($response['standings'] as $val => $event) {
             if ($event['type'] != 'TOTAL') {
                 continue;
@@ -478,9 +500,13 @@ class rss_feed
             "type"     => "carousel",
             "contents" => [$contents],
         );
-        //       $ar = json_encode($ar);
-        //echo $ar;
+        // $this-> _for_test($ar);
         return $ar;
     }
-
+    public function _for_test($ar)
+    {
+        $ar = json_encode($ar);
+        echo $ar;
+        return $ar = $ar;
+    }
 }
