@@ -4,12 +4,10 @@ require_once 'rss_feed.php';
 require_once 'cartoon_feed.php';
 require_once '../vendor/autoload.php';
 //$rss_feed = new cartoon_feed;
- //show_cartoon('nanatsu-no-taizai');
+//show_cartoon('nanatsu-no-taizai');
 $rss_feed = new rss_feed;
-$rss_feed->_get_match('tt','tt');
-
-
-
+// $rss_feed->_get_match('tt','tt');
+set_rich('main');
 function show_cartoon($cartoon)
 {
     $constant                     = new Constant;
@@ -17,14 +15,11 @@ function show_cartoon($cartoon)
     $arrayContent4                = array();
     $arrayContent4['type']        = 'flex';
     $arrayContent4['altText']     = 'Kingsmanga';
-     $arrayContent4['contents']    = $rss_feed->_get_cartoon();
-      $arrayPostData['messages'][0] = $arrayContent4;
-      $return                       = $constant->replyMsgFlex($arrayPostData);
-     echo $return;
+    $arrayContent4['contents']    = $rss_feed->_get_cartoon();
+    $arrayPostData['messages'][0] = $arrayContent4;
+    $return                       = $constant->replyMsgFlex($arrayPostData);
+    echo $return;
 }
-
-
-
 
 function set_rich($text)
 {
@@ -32,7 +27,8 @@ function set_rich($text)
     echo $error;
     switch ($text) {
         case 'main':
-            $richmenu = array("ballfix", "ballresult", "ballnew", "cartoon", "ballstand", "main");
+            // $richmenu = array("ballfix", "ballresult", "ballnew", "cartoon", "ballstand", "main");
+        $richmenu = array("ballfix", "kingsmanga", "ballnew", "plfixture", "plresult", "plstanding");
             $result   = create_rich($richmenu, 'main');
             break;
         case 'ballfix':

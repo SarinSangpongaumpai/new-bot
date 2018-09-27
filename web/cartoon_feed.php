@@ -1,5 +1,4 @@
 <?php
-$GLOBALS['$baseurl'] = 'http://api.football-data.org/v2/';
 
 class cartoon_feed
 {

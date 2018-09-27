@@ -22,7 +22,7 @@ class Constant
         $channelSecret = $this->channelSecret;
         return $channelSecret;
     }
-    public function replyMsgFlex($arrayPostData, $result)
+    public function replyMsgFlex($arrayPostData)
     {
         //$arrayHeader   = array();
         //$arrayHeader[] = "Content-Type: application/json";

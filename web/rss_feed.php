@@ -59,6 +59,7 @@ class rss_feed
             case (strpos($League, 'bundesliga') !== false):
                 $connect_url = $GLOBALS['$baseurl'] . 'competitions/2002/matches';
                 break;
+
         }
         $response         = $this->request($connect_url);
         $response         = json_decode($response, true);
@@ -203,28 +204,28 @@ class rss_feed
             return $current_matchday = $response['currentSeason']['currentMatchday'];
         }
     }
-    public function _get_result($League)
+    public function _get_result($League ,  $matchname)
     {
         switch ($League) {
             case (strpos($League, 'pl') !== false):
                 $connect_url = $GLOBALS['$baseurl'] . 'competitions/2021/matches';
-                $header = "Premier League Match Result #";
+                // $header = "Premier League Result #";
                 break;
             case (strpos($League, 'ucl') !== false):
                 $connect_url = $GLOBALS['$baseurl'] . 'competitions/2001/matches';
-                $header = "UCL Match Result#";
+                // $header = "UCL Result #";
                 break;
             case (strpos($League, 'laliga') !== false):
                 $connect_url = $GLOBALS['$baseurl'] . 'competitions/2014/matches';
-                $header = "Laliga Match Result #";
+                // $header = "Laliga Result #";
                 break;
             case (strpos($League, 'calcio') !== false):
                 $connect_url = $GLOBALS['$baseurl'] . 'competitions/2019/matches';
-                $header = "Calcio Match Result #";
+                // $header = "Calcio Result #";
                 break;
             case (strpos($League, 'bundesliga') !== false):
                 $connect_url = $GLOBALS['$baseurl'] . 'competitions/2002/matches';
-                $header = "Bundesliga Match Result #";
+                // $header = "Bundesliga Result #";
                 break;
         }
 
@@ -300,7 +301,8 @@ class rss_feed
                         'contents' => [array(
                             "type"   => "text",
                             "weight" => "bold",
-                            "text"   => $header . $current_matchday,
+                            // "text"   => $header . $current_matchday,
+                            "text"   => $matchname,
                             "color"  => "#ffffff",
                         )],
                     ),

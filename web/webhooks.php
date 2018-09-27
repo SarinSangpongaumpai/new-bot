@@ -90,6 +90,7 @@ if (!is_null($events['events'])) {
                 //$bot->linkRich('Ue359dced31abcf2b1bd0bd181b498cfa','richmenu-b32651d0c815684f37ba6e18fee48892');
             } else {
                 $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('HI'));
+             $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('Hello'));
             }
         }
     }
@@ -147,7 +148,6 @@ function showstandings($League)
     $constant      = new Constant;
     $rss_feed      = new rss_feed;
     $arrayContent4 = set_header_flex($League, array());
-    echo $arrayContent4['altText'];
 
     $arrayContent4['contents']    = $rss_feed->_get_standings($League);
     $arrayPostData['messages'][0] = $arrayContent4;
@@ -160,7 +160,7 @@ function showmatchtime($League)
     $rss_feed      = new rss_feed;
     $arrayContent4 = set_header_flex($League, array());
 
-    $arrayContent4['altText']     = $arrayContent4['altText'] . $rss_feed->_get_current_matchday($League);
+    $arrayContent4['altText']     = $arrayContent4['altText'] .' #'. $rss_feed->_get_current_matchday($League);
     $matchtime                    = $rss_feed->_get_match($League, $arrayContent4['altText']);
     $arrayContent4['contents']    = $matchtime;
     $arrayPostData['messages'][0] = $arrayContent4;
@@ -173,7 +173,7 @@ function showresultmatch($League)
     $constant                 = new Constant;
     $rss_feed                 = new rss_feed;
     $arrayContent4            = set_header_flex($League, array());
-    $arrayContent4['altText'] = $arrayContent4['altText'] . $rss_feed->_get_current_matchday($League);
+    $arrayContent4['altText'] = $arrayContent4['altText'] .' #'. $rss_feed->_get_current_matchday($League);
 
     $matchtime                    = $rss_feed->_get_result($League, $arrayContent4['altText']);
     $arrayContent4['contents']    = $matchtime;
@@ -183,80 +183,5 @@ function showresultmatch($League)
 }
 
 
-// function set_rich($text)
-// {
-//     $error = 'Complete';
-//     switch ($text) {
-//         case 'main':
-//             $richmenu = array("ballfix", "ballresult", "ballnew", "cartoon", "ballstand", "main");
-//             $result   = create_rich($richmenu, 'main');
-//             break;
-//         case 'ballfix':
-//             $richmenu = array("plfixture", "bundesligafixture", "laligafixture", "calciofixture", "uclfixture", "main");
-//             $result   = create_rich($richmenu, 'fixture');
-//             break;
-//         case 'ballresult':
-//             $richmenu = array("plresult", "bundesligaresult", "laligaresult", "calcioresult", "uclresult", "main");
-//             $result   = create_rich($richmenu, 'result');
-//             break;
-//     }
-//     $error = 'Complete2';
-//     if (!empty($result)) {
-//         $constant = new Constant;
-//         $bot      = $constant->bot;
-//         $result   = $constant->post_rich($result);
-//         $result   = json_decode($result, true);
-//         $error    = 'Complete3';
-//         $bot->uploadRichMenuImage($result['richMenuId'], realpath('') . '/richmenu/' . $text . '.png', 'image/png');
-//         $bot->linkRichMenu('Ue359dced31abcf2b1bd0bd181b498cfa', $result['richMenuId']);
-//     } else {
-//         $error = 'No';
-//         echo $error;
+echo 'version 2.9.1';
 
-//     }
-//     return $error;
-// }
-// function create_rich($richmenu, $name)
-// {
-//     $areas_all = array();
-//     $richmenu  = $richmenu;
-//     $size      = array(
-//         "width"  => 2500,
-//         "height" => 1686,
-//     );
-//     $count = 0;
-//     for ($j = 0; $j < 2; $j++) {
-//         $y = 843 * $j;
-//         for ($i = 0; $i < 3; $i++) {
-//             $x     = 843 * $i;
-//             $bound = array(
-//                 "x"      => $x,
-//                 "y"      => $y,
-//                 "width"  => 833,
-//                 "height" => 843,
-//             );
-//             $action = array(
-//                 "type" => "message",
-//                 "text" => $richmenu[$count],
-//             );
-//             $count = $count + 1;
-//             $areas = array(
-//                 'bounds' => $bound,
-//                 'action' => $action,
-//             );
-//             array_push($areas_all, $areas);
-//         }
-//     }
-//     $data = array(
-//         "size"        => $size,
-//         "selected"    => true,
-//         "name"        => $name,
-//         "chatBarText" => $name,
-//         "areas"       => $areas_all,
-//     );
-
-//     $result = json_encode($data);
-//     echo $result;
-//     return $result;
-// }
-echo 'version 2.9';
