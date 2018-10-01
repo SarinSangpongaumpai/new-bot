@@ -16,8 +16,8 @@ if (!is_null($events['events'])) {
     // Loop through each event
     foreach ($events['events'] as $event) {
         if ($event['type'] == 'postback') {
-            $data = $event['postback']['data'];
-            $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($data));
+           // $data = $event['postback']['data'];
+            $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('Eiei'));
         }
         // Reply only when message sent is in 'text' format
         elseif ($event['type'] == 'message' && $event['message']['type'] == 'text') {
@@ -60,7 +60,7 @@ if (!is_null($events['events'])) {
                     $constant->default_send($arrayPostData);
                 }
             } elseif (strpos($text, 'standing') !== false) {
-                $return = showstandings($text);
+                $return = showstanding($text);
                 if ($return == 'Error') {
                     $messages = [
                         'type' => 'text',
@@ -222,4 +222,4 @@ function showresultmatch($League)
     echo $return;
 }
 
-echo 'version 2.9.5';
+echo 'version 2.9.6';

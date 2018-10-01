@@ -224,10 +224,6 @@ class rss_feed
                 "size"   => "xxs",
                 "flex"   => 3,
                 "wrap"   => true,
-                "action" => array(
-                    "type" => "postback",
-                    "data" => "Eiei",
-                ),
             );
             array_push($team, $data);
             if ($event['status'] == 'FINISHED') {
@@ -410,6 +406,10 @@ class rss_feed
                             "size" => "xxs",
                             "wrap" => true,
                             "flex" => 11,
+                                            "action" => array(
+                    "type" => "postback",
+                    "data" => "Eiei",
+                ),
                         ),
                         array(
                             "type" => "text",
