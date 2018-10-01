@@ -15,8 +15,12 @@ $bot        = new \LINE\LINEBot($httpClient, ['channelSecret' => $constant->get_
 if (!is_null($events['events'])) {
     // Loop through each event
     foreach ($events['events'] as $event) {
+        if ($event['type'] == 'postback') {
+            $data = $event['postback']['data'];
+            $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($data));
+        }
         // Reply only when message sent is in 'text' format
-        if ($event['type'] == 'message' && $event['message']['type'] == 'text') {
+        elseif ($event['type'] == 'message' && $event['message']['type'] == 'text') {
             // Get userID
             $userid = $event['source']['userId'];
             // Get replyToken
@@ -91,7 +95,6 @@ if (!is_null($events['events'])) {
                 //$bot->linkRich('Ue359dced31abcf2b1bd0bd181b498cfa','richmenu-b32651d0c815684f37ba6e18fee48892');
             } else {
                 $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('HI'));
-             $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('Hello'));
             }
         }
     }
@@ -150,16 +153,16 @@ function showstanding($League)
     $arrayContent4                = array();
     $arrayContent4['type']        = 'flex';
     $arrayContent4['altText']     = 'Premier League Standings';
-    $arrayContent4['contents']    = $rss_feed->_get_standings($League);
+    $arrayContent4['contents']    = $rss_feed->_get_standings($League, $arrayContent4['altText']);
     $arrayPostData['messages'][0] = $arrayContent4;
     $return                       = $constant->replyMsgFlex($arrayPostData);
     echo $return;
 }
 function showmatchtime($League)
 {
-    $constant = new Constant;
-    $rss_feed = new rss_feed;
-    $matchday = $rss_feed->_get_current_matchday($League);
+    $constant              = new Constant;
+    $rss_feed              = new rss_feed;
+    $matchday              = $rss_feed->_get_current_matchday($League);
     $arrayContent4         = array();
     $arrayContent4['type'] = 'flex';
     switch ($League) {
@@ -219,7 +222,4 @@ function showresultmatch($League)
     echo $return;
 }
 
-
-echo 'version 2.9.4';
-
-
+echo 'version 2.9.5';

@@ -1,13 +1,15 @@
 <?php
+//Set schedule
+//https://cron-job.org/en/members/jobs/ 
 require 'constant.php';
 require_once 'rss_feed.php';
 require_once 'cartoon_feed.php';
 require_once '../vendor/autoload.php';
-// $rss_feed = new cartoon_feed;
-// show_cartoon();
-$rss_feed = new rss_feed;
-showmatchtime('plfixture');
-function show_cartoon($cartoon)
+$rss_feed = new cartoon_feed;
+show_cartoon();
+// $rss_feed = new rss_feed;
+// showresultmatch('plresult');
+function show_cartoon()
 {
     $constant                     = new Constant;
     $rss_feed                     = new cartoon_feed;
@@ -16,7 +18,7 @@ function show_cartoon($cartoon)
     $arrayContent4['altText']     = 'Kingsmanga';
     $arrayContent4['contents']    = $rss_feed->_get_cartoon();
     $arrayPostData['messages'][0] = $arrayContent4;
-    $return                       = $constant->replyMsgFlex($arrayPostData);
+     $return                       = $constant->replyMsgFlex($arrayPostData);
     echo $return;
 }
 

@@ -47,25 +47,6 @@ class rss_feed
     public function _get_match($League, $header)
     {
 
-        // switch ($League) {
-        //     case (strpos($League, 'pl') !== false):
-        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2021/matches';
-        //         break;
-        //     case (strpos($League, 'ucl') !== false):
-        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2001/matches';
-        //         break;
-        //     case (strpos($League, 'laliga') !== false):
-        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2014/matches';
-        //         break;
-        //     case (strpos($League, 'calcio') !== false):
-        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2019/matches';
-        //         break;
-        //     case (strpos($League, 'bundesliga') !== false):
-        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2002/matches';
-        //         break;
-
-        // }
-
         $League_name = strstr($League, 'fixture', true);
         if (isset($GLOBALS[$League_name])) {
             $connect_url = $GLOBALS['$baseurl'] . 'competitions/' . $GLOBALS[$League_name] . '/matches';
@@ -73,7 +54,6 @@ class rss_feed
             return;
         }
 
-        //$response         = $this->request($connect_url);
         $response = json_decode($this->request($connect_url), true);
 
         $current_matchday = $this->_get_current_matchday($League);
@@ -217,36 +197,14 @@ class rss_feed
     }
     public function _get_result($League, $header)
     {
-        // switch ($League) {
-        //     case (strpos($League, 'pl') !== false):
-        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2021/matches';
-        //         // $header = "Premier League Result #";
-        //         break;
-        //     case (strpos($League, 'ucl') !== false):
-        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2001/matches';
-        //         // $header = "UCL Result #";
-        //         break;
-        //     case (strpos($League, 'laliga') !== false):
-        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2014/matches';
-        //         // $header = "Laliga Result #";
-        //         break;
-        //     case (strpos($League, 'calcio') !== false):
-        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2019/matches';
-        //         // $header = "Calcio Result #";
-        //         break;
-        //     case (strpos($League, 'bundesliga') !== false):
-        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2002/matches';
-        //         // $header = "Bundesliga Result #";
-        //         break;
-        // }
         $League_name = strstr($League, 'result', true);
         if (isset($GLOBALS[$League_name])) {
             $connect_url = $GLOBALS['$baseurl'] . 'competitions/' . $GLOBALS[$League_name] . '/matches';
         } else {
             return;
         }
-        // $response         = $this->request($connect_url);
         $response         = json_decode($this->request($connect_url), true);
+        echo $this->request($connect_url);
         $current_matchday = $this->_get_current_matchday($League);
         $all_match        = array();
         $all_contents     = array();
@@ -261,19 +219,23 @@ class rss_feed
             $event['homeTeam']['name'] = str_replace('FC', '', $event['homeTeam']['name']);
             $team                      = array();
             $data                      = array(
-                "type" => "text",
-                "text" => $event['homeTeam']['name'],
-                "size" => "xxs",
-                "flex" => 3,
-                "wrap" => true,
+                "type"   => "text",
+                "text"   => $event['homeTeam']['name'],
+                "size"   => "xxs",
+                "flex"   => 3,
+                "wrap"   => true,
+                "action" => array(
+                    "type" => "postback",
+                    "data" => "Eiei",
+                ),
             );
             array_push($team, $data);
             if ($event['status'] == 'FINISHED') {
                 $status = $event['score']['fullTime']['homeTeam'] . ' - ' .
                     $event['score']['fullTime']['awayTeam'] . ' (FT)';
             } elseif ($event['status'] == 'LIVE') {
-                $status = $event['score']['fullTime']['homeTeam'] . ' - ' .
-                    $event['score']['fullTime']['awayTeam'] . ' (LIVE)';
+                $status = $event['score']['halfTime']['homeTeam'] . ' - ' .
+                    $event['score']['halfTime']['awayTeam'] . ' (LIVE)';
             } else {
                 $status = '0-0 (PRE)';
             }
