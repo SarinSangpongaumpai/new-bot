@@ -15,17 +15,18 @@ $bot        = new \LINE\LINEBot($httpClient, ['channelSecret' => $constant->get_
 if (!is_null($events['events'])) {
     // Loop through each event
     foreach ($events['events'] as $event) {
+        // Get replyToken
+        $replyToken = $event['replyToken'];
         if ($event['type'] == 'postback') {
-           // $data = $event['postback']['data'];
-            $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('Eiei'));
+             $data = $event['postback']['data'];
+            $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($data));
         }
         // Reply only when message sent is in 'text' format
         elseif ($event['type'] == 'message' && $event['message']['type'] == 'text') {
             // Get userID
             $userid = $event['source']['userId'];
-            // Get replyToken
-            $replyToken = $event['replyToken'];
-            $text       = $event['message']['text'];
+
+            $text = $event['message']['text'];
             if ($text == "สวัสดี") {
                 $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder(realpath('')));
                 //$constant->default_send($arrayPostData);
@@ -222,4 +223,4 @@ function showresultmatch($League)
     echo $return;
 }
 
-echo 'version 2.9.6';
+echo 'version 2.9.7';
