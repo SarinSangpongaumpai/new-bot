@@ -19,7 +19,10 @@ if (!is_null($events['events'])) {
         $replyToken = $event['replyToken'];
         if ($event['type'] == 'postback') {
              $data = $event['postback']['data'];
-            $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($data));
+            //$bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($data));
+             if (strpos($data, 'Team')){
+                showsteamfixture($data);
+             }
         }
         // Reply only when message sent is in 'text' format
         elseif ($event['type'] == 'message' && $event['message']['type'] == 'text') {
@@ -32,64 +35,26 @@ if (!is_null($events['events'])) {
                 //$constant->default_send($arrayPostData);
             } elseif (strpos($text, 'fixture') !== false) {
                 $return = showmatchtime($text);
-                if ($return == 'Error') {
-                    $messages = [
-                        'type' => 'text',
-                        'text' => 'No fixture to display',
-                    ];
-                    //Make a POST Request to Messaging API to reply to sender
-                    $data = [
-                        'replyToken' => $replyToken,
-                        'messages'   => [$messages],
-                    ];
-                    $arrayPostData = json_encode($data);
-                    $constant->default_send($arrayPostData);
-                }
+                // if ($return == 'Error') {
+                //     $messages = [
+                //         'type' => 'text',
+                //         'text' => 'No fixture to display',
+                //     ];
+                //     //Make a POST Request to Messaging API to reply to sender
+                //     $data = [
+                //         'replyToken' => $replyToken,
+                //         'messages'   => [$messages],
+                //     ];
+                //     $arrayPostData = json_encode($data);
+                //     $constant->default_send($arrayPostData);
+                // }
             } elseif (strpos($text, 'result') !== false) {
                 $return = showresultmatch($text);
-                if ($return == 'Error') {
-                    $messages = [
-                        'type' => 'text',
-                        'text' => 'No result to display',
-                    ];
-                    //Make a POST Request to Messaging API to reply to sender
-                    $data = [
-                        'replyToken' => $replyToken,
-                        'messages'   => [$messages],
-                    ];
-                    $arrayPostData = json_encode($data);
-                    $constant->default_send($arrayPostData);
-                }
             } elseif (strpos($text, 'standing') !== false) {
                 $return = showstanding($text);
-                if ($return == 'Error') {
-                    $messages = [
-                        'type' => 'text',
-                        'text' => 'No standings to display',
-                    ];
-                    //Make a POST Request to Messaging API to reply to sender
-                    $data = [
-                        'replyToken' => $replyToken,
-                        'messages'   => [$messages],
-                    ];
-                    $arrayPostData = json_encode($data);
-                    $constant->default_send($arrayPostData);
-                }
+
             } elseif (strpos($text, 'kingsmanga') !== false) {
                 $return = show_cartoon();
-                if ($return == 'Error') {
-                    $messages = [
-                        'type' => 'text',
-                        'text' => 'No standings to display',
-                    ];
-                    //Make a POST Request to Messaging API to reply to sender
-                    $data = [
-                        'replyToken' => $replyToken,
-                        'messages'   => [$messages],
-                    ];
-                    $arrayPostData = json_encode($data);
-                    $constant->default_send($arrayPostData);
-                }
             } elseif ($text == 'main') {
                 //set_rich('ballfix');
                 //$bot->linkRichMenu($userid, 'richmenu-b32651d0c815684f37ba6e18fee48892');
@@ -145,7 +110,19 @@ function show_cartoon()
     $arrayContent4['contents']    = $rss_feed->_get_cartoon();
     $arrayPostData['messages'][0] = $arrayContent4;
     $return                       = $constant->replyMsgFlex($arrayPostData);
-    echo $return;
+}
+
+function showsteamfixture($team)
+{
+    $constant                     = new Constant;
+    $rss_feed                     = new rss_feed;
+    $arrayContent4                = array();
+    $arrayContent4['type']        = 'flex';
+    $arrayContent4['altText']     = strstr($team, 'ID', true).' Fixture';
+
+    $arrayContent4['contents'] = $rss_feed->_get_match_team($team);
+    $arrayPostData['messages'][0] = $arrayContent4;
+    $return                       = $constant->replyMsgFlex($arrayPostData);
 }
 function showstanding($League)
 {
@@ -157,7 +134,6 @@ function showstanding($League)
     $arrayContent4['contents']    = $rss_feed->_get_standings($League, $arrayContent4['altText']);
     $arrayPostData['messages'][0] = $arrayContent4;
     $return                       = $constant->replyMsgFlex($arrayPostData);
-    echo $return;
 }
 function showmatchtime($League)
 {
@@ -188,7 +164,6 @@ function showmatchtime($League)
     $arrayContent4['contents']    = $matchtime;
     $arrayPostData['messages'][0] = $arrayContent4;
     $return                       = $constant->replyMsgFlex($arrayPostData);
-    echo $return;
 }
 
 function showresultmatch($League)
@@ -220,7 +195,5 @@ function showresultmatch($League)
     $arrayContent4['contents']    = $matchtime;
     $arrayPostData['messages'][0] = $arrayContent4;
     $return                       = $constant->replyMsgFlex($arrayPostData);
-    echo $return;
 }
-
-echo 'version 2.9.7';
+echo 'version 2.9.8';

@@ -17,11 +17,13 @@ class rss_feed
         $tz = new DateTimeZone("Asia/Bangkok"); // or whatever zone you're after
         $dt->setTimezone($tz);
         if ($flag == 1) {
-            $dateWithTimeZone = $dt->format('l j F Y');
+            $dateWithTimeZone = $dt->format('l j F Y ');
         } elseif ($flag == 2) {
             $dateWithTimeZone = $dt->format('H:i');
         } elseif ($flag == 3) {
             $dateWithTimeZone = $dt->format('j');
+        } elseif ($flag == 4) {
+            $dateWithTimeZone = $dt->format('l j F Y H:i');
         }
         return $dateWithTimeZone = $dateWithTimeZone;
     }
@@ -34,7 +36,7 @@ class rss_feed
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_SSL_VERIFYHOST => false,
-            CURLOPT_POST           => true,
+            // CURLOPT_POST           => true,
             CURLOPT_HTTPHEADER     => array(
                 "X-Auth-Token: 9c9c940a83dd4ab0a616ca8535bc266c",
                 "cache-control: no-cache",
@@ -70,11 +72,15 @@ class rss_feed
             $event['homeTeam']['name'] = str_replace('FC', '', $event['homeTeam']['name']);
             $team                      = array();
             $data                      = array(
-                "type" => "text",
-                "text" => $event['homeTeam']['name'],
-                "size" => "xxs",
-                "flex" => 3,
-                "wrap" => true,
+                "type"   => "text",
+                "text"   => $event['homeTeam']['name'],
+                "size"   => "xxs",
+                "flex"   => 3,
+                "wrap"   => true,
+                "action" => array(
+                    "type" => "postback",
+                    "data" => $event['homeTeam']['name'] . ' TeamID' . $event['homeTeam']['id'],
+                ),
             );
             array_push($team, $data);
 
@@ -87,11 +93,15 @@ class rss_feed
             );
             array_push($team, $data);
             $data = array(
-                "type" => "text",
-                "text" => $event['awayTeam']['name'],
-                "size" => "xxs",
-                "flex" => 3,
-                "wrap" => true,
+                "type"   => "text",
+                "text"   => $event['awayTeam']['name'],
+                "size"   => "xxs",
+                "flex"   => 3,
+                "wrap"   => true,
+                "action" => array(
+                    "type" => "postback",
+                    "data" => $event['awayTeam']['name'] . ' TeamID' . $event['awayTeam']['id'],
+                ),
             );
             array_push($team, $data);
             $teammatch = array(
@@ -203,8 +213,8 @@ class rss_feed
         } else {
             return;
         }
-        $response         = json_decode($this->request($connect_url), true);
-        echo $this->request($connect_url);
+        $response = json_decode($this->request($connect_url), true);
+        //echo $this->request($connect_url);
         $current_matchday = $this->_get_current_matchday($League);
         $all_match        = array();
         $all_contents     = array();
@@ -224,6 +234,10 @@ class rss_feed
                 "size"   => "xxs",
                 "flex"   => 3,
                 "wrap"   => true,
+                "action" => array(
+                    "type" => "postback",
+                    "data" => $event['homeTeam']['name'] . ' TeamID' . $event['homeTeam']['id'],
+                ),
             );
             array_push($team, $data);
             if ($event['status'] == 'FINISHED') {
@@ -245,11 +259,15 @@ class rss_feed
             );
             array_push($team, $data);
             $data = array(
-                "type" => "text",
-                "text" => $event['awayTeam']['name'],
-                "size" => "xxs",
-                "flex" => 3,
-                "wrap" => true,
+                "type"   => "text",
+                "text"   => $event['awayTeam']['name'],
+                "size"   => "xxs",
+                "flex"   => 3,
+                "wrap"   => true,
+                "action" => array(
+                    "type" => "postback",
+                    "data" => $event['awayTeam']['name'] . ' TeamID' . $event['awayTeam']['id'],
+                ),
             );
             array_push($team, $data);
             $teammatch = array(
@@ -316,36 +334,13 @@ class rss_feed
     }
     public function _get_standings($League, $header)
     {
-        // switch ($League) {
-        //     case (strpos($League, 'pl') !== false):
-        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2021/standings';
-        //         $header      = 'Premier League Standings';
-        //         break;
-        //     case (strpos($League, 'ucl') !== false):
-        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2001/standings';
-        //         $header      = 'UCL Standings';
-        //         break;
-        //     case (strpos($League, 'laliga') !== false):
-        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2014/standings';
-        //         $header      = 'Laliga Standings';
-        //         break;
-        //     case (strpos($League, 'calcio') !== false):
-        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2019/standings';
-        //         $header      = 'Calcio Serie A Standings';
-        //         break;
-        //     case (strpos($League, 'bundesliga') !== false):
-        //         $connect_url = $GLOBALS['$baseurl'] . 'competitions/2002/standings';
-        //         $header      = 'Bundesliga Standings';
-        //         break;
-        // }
         $League_name = strstr($League, 'standing', true);
         if (isset($GLOBALS[$League_name])) {
             $connect_url = $GLOBALS['$baseurl'] . 'competitions/' . $GLOBALS[$League_name] . '/standings';
         } else {
             return;
         }
-        $color = $this->_set_color($League);
-        // $response = $this->request($connect_url);
+        $color    = $this->_set_color($League);
         $response = json_decode($this->request($connect_url), true);
         foreach ($response['standings'] as $val => $event) {
             if ($event['type'] != 'TOTAL') {
@@ -401,15 +396,15 @@ class rss_feed
                             "flex" => 2,
                         ),
                         array(
-                            "type" => "text",
-                            "text" => $table['team']['name'],
-                            "size" => "xxs",
-                            "wrap" => true,
-                            "flex" => 11,
-                                            "action" => array(
-                    "type" => "postback",
-                    "data" => "Eiei",
-                ),
+                            "type"   => "text",
+                            "text"   => $table['team']['name'],
+                            "size"   => "xxs",
+                            "wrap"   => true,
+                            "flex"   => 11,
+                            "action" => array(
+                                "type" => "postback",
+                                "data" => $table['team']['name'] . ' TeamID' . $table['team']['id'],
+                            ),
                         ),
                         array(
                             "type" => "text",
@@ -424,7 +419,6 @@ class rss_feed
                             "flex" => 3,
                         ),
                     ],
-                    //   array("type" => "separator"),
                 );
                 array_push($team, $position);
             }
@@ -465,10 +459,112 @@ class rss_feed
         // $this-> _for_test($ar);
         return $ar;
     }
-    public function _for_test($ar)
+    public function _get_match_team($teamname)
     {
-        $ar = json_encode($ar);
-        echo $ar;
-        return $ar = $ar;
+        $index       = 1;
+        $id          = $this->strstr_after($teamname, 'ID');
+        $teamname    = strstr($teamname, 'ID', true);
+        $connect_url = $GLOBALS['$baseurl'] . '/teams/' . $id . '/matches/';
+        //echo $this->request($connect_url);
+
+        $data = array(
+            "type"   => "text",
+            "text"   => "Upcoming Matches",
+            "weight" => "bold",
+            "size"   => "xs",
+            "align"  => "start",
+        );
+        $container = array($data,
+            array("type" => "separator"));
+        $response = json_decode($this->request($connect_url), true);
+        foreach ($response['matches'] as $val => $event) {
+            if ($event['status'] == 'SCHEDULED') {
+                if ($index > 5) {
+                    continue;
+                }
+                //else{
+                $index = $index + 1;
+                if (strpos($event['awayTeam']['name'], $teamname) !== false) {
+
+                    $teamshow = $event['homeTeam']['name'];
+                    $id       = $event['homeTeam']['id'];
+                } else {
+                    $teamshow = $event['awayTeam']['name'];
+                    $id       = $event['awayTeam']['id'];
+                }
+
+                $time = array(
+                    "size" => "xxs",
+                    "wrap" => true,
+                    "flex" => 2,
+                    "type" => "text",
+                    "text" => $this->set_time_zone($event['utcDate'], 4),
+                );
+                $data = array(
+                    "type"   => "text",
+                    "text"   => $teamshow,
+                    "size"   => "xs",
+                    "wrap"   => true,
+                    "flex"   => 2,
+                    "action" => array(
+                        "type" => "postback",
+                        "data" => $teamshow . ' TeamID' . $id,
+                    ),
+                );
+                $team = array($time,
+                    array("type" => "separator"),
+                    $data);
+
+                $teamall = array(
+                    'type'     => 'box',
+                    'layout'   => 'horizontal',
+                    "spacing"  => "md",
+                    'contents' => $team,
+                );
+                array_push($container, $teamall);
+                $teamall = array("type" => "separator");
+                array_push($container, $teamall);
+            }
+        }
+        // No value exit form
+        // if (empty($teamall)) {
+        //     return $ar;
+        // }
+        $contents = array(
+            'type'   => 'bubble',
+            'styles' => array(
+                'header' => array("backgroundColor" => '#007a12'),
+            ),
+            'header' => array(
+                'type'     => 'box',
+                'layout'   => 'vertical',
+                'contents' => [array(
+                    "type"   => "text",
+                    'weight' => 'bold',
+                    "text"   => $teamname . ' Fixture',
+                    "wrap"   => true,
+                    "color"  => "#ffffff",
+                    "size"   => "md",
+                )],
+            ),
+            'body'   => array(
+                'type'     => 'box',
+                'layout'   => 'vertical',
+                "spacing"  => "md",
+                'contents' => $container
+                ,
+
+            ),
+        );
+        $ar = $contents;
+        return $ar;
     }
+        function strstr_after($haystack, $needle, $case_insensitive = false) {
+    $strpos = ($case_insensitive) ? 'stripos' : 'strpos';
+    $pos = $strpos($haystack, $needle);
+    if (is_int($pos)) {
+        return substr($haystack, $pos + strlen($needle));
+    }
+    // Most likely false or null
+  }
 }

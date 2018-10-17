@@ -1,14 +1,14 @@
 <?php
 //Set schedule
-//https://cron-job.org/en/members/jobs/ 
+//https://cron-job.org/en/members/jobs/
 require 'constant.php';
 require_once 'rss_feed.php';
 require_once 'cartoon_feed.php';
 require_once '../vendor/autoload.php';
-$rss_feed = new cartoon_feed;
-show_cartoon();
-// $rss_feed = new rss_feed;
-// showresultmatch('plresult');
+// $rss_feed = new cartoon_feed;
+ show_cartoon();
+ //$return = showsteamfixture('Liverpool TeamID64');
+
 function show_cartoon()
 {
     $constant                     = new Constant;
@@ -18,7 +18,7 @@ function show_cartoon()
     $arrayContent4['altText']     = 'Kingsmanga';
     $arrayContent4['contents']    = $rss_feed->_get_cartoon();
     $arrayPostData['messages'][0] = $arrayContent4;
-     $return                       = $constant->replyMsgFlex($arrayPostData);
+    $return                       = $constant->replyMsgFlex($arrayPostData);
     echo $return;
 }
 
@@ -29,7 +29,7 @@ function set_rich($text)
     switch ($text) {
         case 'main':
             // $richmenu = array("ballfix", "ballresult", "ballnew", "cartoon", "ballstand", "main");
-        $richmenu = array("ballfix", "kingsmanga", "ballnew", "plfixture", "plresult", "plstanding");
+            $richmenu = array("ballfix", "kingsmanga", "ballnew", "plfixture", "plresult", "plstanding");
             $result   = create_rich($richmenu, 'main');
             break;
         case 'ballfix':
@@ -52,7 +52,7 @@ function set_rich($text)
         $bot           = new \LINE\LINEBot($httpClient, ['channelSecret' => $channelSecret]);
         echo $error;
         $result = $constant->post_rich($result);
-        $error = 'Complete3';
+        $error  = 'Complete3';
         echo $error;
         $result = json_decode($result, true);
         $error  = 'Complete4';
@@ -122,6 +122,23 @@ function create_rich($richmenu, $name)
     //echo $result;
     return $result;
 }
+function showsteamfixture($team)
+{
+    $constant                     = new Constant;
+    $rss_feed                     = new rss_feed;
+    $arrayContent4                = array();
+    $arrayContent4['type']        = 'flex';
+    $arrayContent4['altText']     = strstr($team, 'ID', true).' Fixture';
+
+    $arrayContent4['contents'] = $rss_feed->_get_match_team($team);
+    $arrayPostData['messages'][0] = $arrayContent4;
+    $return                       = $constant->replyMsgFlex($arrayPostData);
+    //Error occur
+    //  if (!empty(json_decode($return,1) ) ) {
+    //     return $return ;
+    // }
+}
+
 function showstanding($League)
 {
     $constant                     = new Constant;
@@ -129,16 +146,16 @@ function showstanding($League)
     $arrayContent4                = array();
     $arrayContent4['type']        = 'flex';
     $arrayContent4['altText']     = 'Premier League Standings';
-    $arrayContent4['contents']    = $rss_feed->_get_standings($League);
+    $arrayContent4['contents']    = $rss_feed->_get_standings($League, $arrayContent4['altText']);
     $arrayPostData['messages'][0] = $arrayContent4;
     $return                       = $constant->replyMsgFlex($arrayPostData);
     echo $return;
 }
 function showmatchtime($League)
 {
-    $constant = new Constant;
-    $rss_feed = new rss_feed;
-    $matchday = $rss_feed->_get_current_matchday($League);
+    $constant              = new Constant;
+    $rss_feed              = new rss_feed;
+    $matchday              = $rss_feed->_get_current_matchday($League);
     $arrayContent4         = array();
     $arrayContent4['type'] = 'flex';
     switch ($League) {

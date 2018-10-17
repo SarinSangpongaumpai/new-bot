@@ -12,6 +12,7 @@ class Constant
         $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient($this->get_token());
         $this->bot  = new \LINE\LINEBot($httpClient, ['channelSecret' => $this->get_secret()]);
     }
+
     public function get_token()
     {
         $accessToken = $this->accessToken;
@@ -43,7 +44,7 @@ class Constant
         // if ($result != '{}') {
         //     $result = 'Error';
         // }
-        echo $result;
+        //echo $result;
         curl_close($ch);
         return $result;
     }
@@ -80,7 +81,7 @@ class Constant
         return $result;
 
     }
-        public function link_rich($url)
+    public function link_rich($url)
     {
         $arrayHeader = array('Content-Type: application/json', 'Authorization: Bearer ' . $this->get_token());
         //$ch = curl_init($url);
