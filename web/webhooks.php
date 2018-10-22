@@ -2,6 +2,7 @@
 require_once '../vendor/autoload.php';
 require 'constant.php';
 require_once 'rss_feed.php';
+require_once 'movie.php';
 require_once 'cartoon_feed.php';
 // Get POST body content
 $content = file_get_contents('php://input');
@@ -19,7 +20,6 @@ if (!is_null($events['events'])) {
         $replyToken = $event['replyToken'];
         if ($event['type'] == 'postback') {
              $data = $event['postback']['data'];
-            //$bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($data));
              if (strpos($data, 'Team')){
                 showsteamfixture($data);
              }
@@ -55,7 +55,11 @@ if (!is_null($events['events'])) {
 
             } elseif (strpos($text, 'kingsmanga') !== false) {
                 $return = show_cartoon();
-            } elseif ($text == 'main') {
+            } 
+            elseif (strpos($text, 'moviereview') !== false) {
+                $return = show_movie();
+            }
+            elseif ($text == 'main') {
                 //set_rich('ballfix');
                 //$bot->linkRichMenu($userid, 'richmenu-b32651d0c815684f37ba6e18fee48892');
                 //$bot->linkRich('Ue359dced31abcf2b1bd0bd181b498cfa','richmenu-b32651d0c815684f37ba6e18fee48892');
@@ -196,4 +200,16 @@ function showresultmatch($League)
     $arrayPostData['messages'][0] = $arrayContent4;
     $return                       = $constant->replyMsgFlex($arrayPostData);
 }
-echo 'version 2.9.8';
+function show_movie()
+{
+    $constant                     = new Constant;
+    $movie_feed                    = new movie;
+    $arrayContent4                = array();
+    $arrayContent4['type']        = 'flex';
+    $arrayContent4['altText']     = 'Movie Score';
+    $arrayContent4['contents']    =  $movie_feed->movie_review();
+    $arrayPostData['messages'][0] = $arrayContent4;
+    $return                       = $constant->replyMsgFlex($arrayPostData);
+    echo $return;
+}
+echo 'version 2.9.9';

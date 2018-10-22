@@ -45,7 +45,43 @@ class rss_feed
         ));
         return $response = curl_exec($curl);
     }
+    public function _set_color($League)
+    {
+        switch ($League) {
+            case (strpos($League, 'pl') !== false):
+                $color = '#3D185B';
+                break;
+            case (strpos($League, 'ucl') !== false):
+                $color = '#231F20';
+                break;
+            case (strpos($League, 'laliga') !== false):
+                $color = '#FF7D01';
+                break;
+            case (strpos($League, 'calcio') !== false):
+                $color = '#D20514';
+                break;
+            case (strpos($League, 'bundesliga') !== false):
+                $color = '#098D37';
+                break;
+        }
 
+        return $color;
+    }
+    public function _get_current_matchday($League)
+    {
+        $connect_url = $GLOBALS['$baseurl'] . 'competitions/2021/';
+        $response    = $this->request($connect_url);
+        $response    = json_decode($response, true);
+        if (!is_numeric($response['currentSeason']['currentMatchday'])) {
+            return '1';
+        } else {
+            $exact_match = preg_replace('/\D/', '', $League);
+            if ($exact_match > 0) {
+                $response['currentSeason']['currentMatchday'] = $exact_match;
+            }
+            return $current_matchday = $response['currentSeason']['currentMatchday'];
+        }
+    }
     public function _get_match($League, $header)
     {
 
@@ -154,7 +190,6 @@ class rss_feed
                     ),
                 );
                 array_push($all_contents, $contents);
-
                 $all_match = array();
 
             }
@@ -168,43 +203,6 @@ class rss_feed
         return $ar;
     }
 
-    public function _set_color($League)
-    {
-        switch ($League) {
-            case (strpos($League, 'pl') !== false):
-                $color = '#3D185B';
-                break;
-            case (strpos($League, 'ucl') !== false):
-                $color = '#231F20';
-                break;
-            case (strpos($League, 'laliga') !== false):
-                $color = '#FF7D01';
-                break;
-            case (strpos($League, 'calcio') !== false):
-                $color = '#D20514';
-                break;
-            case (strpos($League, 'bundesliga') !== false):
-                $color = '#098D37';
-                break;
-        }
-
-        return $color;
-    }
-    public function _get_current_matchday($League)
-    {
-        $connect_url = $GLOBALS['$baseurl'] . 'competitions/2021/';
-        $response    = $this->request($connect_url);
-        $response    = json_decode($response, true);
-        if (!is_numeric($response['currentSeason']['currentMatchday'])) {
-            return '1';
-        } else {
-            $exact_match = preg_replace('/\D/', '', $League);
-            if ($exact_match > 0) {
-                $response['currentSeason']['currentMatchday'] = $exact_match;
-            }
-            return $current_matchday = $response['currentSeason']['currentMatchday'];
-        }
-    }
     public function _get_result($League, $header)
     {
         $League_name = strstr($League, 'result', true);
@@ -293,7 +291,6 @@ class rss_feed
                         'contents' => [array(
                             "type"   => "text",
                             "weight" => "bold",
-                            // "text"   => $header . $current_matchday,
                             "text"   => $header,
                             "color"  => "#ffffff",
                         )],
@@ -444,11 +441,7 @@ class rss_feed
                 'type'     => 'box',
                 'layout'   => 'vertical',
                 "spacing"  => "sm",
-                'contents' =>
-
-                $team
-
-                ,
+                'contents' => $team,
             ),
         );
 
@@ -456,14 +449,15 @@ class rss_feed
             "type"     => "carousel",
             "contents" => [$contents],
         );
-        // $this-> _for_test($ar);
-        return $ar;
+         return $ar;
+        //$ar = json_encode($ar);
+        //echo $ar;
     }
     public function _get_match_team($teamname)
     {
         $index       = 1;
         $id          = $this->strstr_after($teamname, 'ID');
-        $teamname    = strstr($teamname, 'ID', true);
+        $teamname    = strstr($teamname, ' Team', true);
         $connect_url = $GLOBALS['$baseurl'] . '/teams/' . $id . '/matches/';
         //echo $this->request($connect_url);
 
@@ -480,19 +474,19 @@ class rss_feed
         foreach ($response['matches'] as $val => $event) {
             if ($event['status'] == 'SCHEDULED') {
                 if ($index > 5) {
-                    continue;
+                    break;
                 }
-                //else{
                 $index = $index + 1;
+                //echo $teamname;
+                //echo $event['awayTeam']['name'];
                 if (strpos($event['awayTeam']['name'], $teamname) !== false) {
-
                     $teamshow = $event['homeTeam']['name'];
                     $id       = $event['homeTeam']['id'];
                 } else {
                     $teamshow = $event['awayTeam']['name'];
                     $id       = $event['awayTeam']['id'];
                 }
-
+                //echo $teamshow;
                 $time = array(
                     "size" => "xxs",
                     "wrap" => true,
@@ -551,20 +545,21 @@ class rss_feed
                 'type'     => 'box',
                 'layout'   => 'vertical',
                 "spacing"  => "md",
-                'contents' => $container
-                ,
-
+                'contents' => $container,
             ),
         );
+        //$ar = json_encode($contents);
+        //echo $ar;
         $ar = $contents;
         return $ar;
     }
-        function strstr_after($haystack, $needle, $case_insensitive = false) {
-    $strpos = ($case_insensitive) ? 'stripos' : 'strpos';
-    $pos = $strpos($haystack, $needle);
-    if (is_int($pos)) {
-        return substr($haystack, $pos + strlen($needle));
+    public function strstr_after($haystack, $needle, $case_insensitive = false)
+    {
+        $strpos = ($case_insensitive) ? 'stripos' : 'strpos';
+        $pos    = $strpos($haystack, $needle);
+        if (is_int($pos)) {
+            return substr($haystack, $pos + strlen($needle));
+        }
+        // Most likely false or null
     }
-    // Most likely false or null
-  }
 }
