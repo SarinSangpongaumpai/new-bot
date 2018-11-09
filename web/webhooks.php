@@ -21,7 +21,7 @@ if (!is_null($events['events'])) {
         if ($event['type'] == 'postback') {
              $data = $event['postback']['data'];
              if (strpos($data, 'Team')){
-                showsteamfixture($data);
+                showsteamfixture($data,$replyToken);
              }
         }
         // Reply only when message sent is in 'text' format
@@ -31,10 +31,9 @@ if (!is_null($events['events'])) {
 
             $text = $event['message']['text'];
             if ($text == "สวัสดี") {
-                $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder(realpath('')));
                 //$constant->default_send($arrayPostData);
             } elseif (strpos($text, 'fixture') !== false) {
-                $return = showmatchtime($text);
+                $return = showmatchtime($text,$replyToken);
                 // if ($return == 'Error') {
                 //     $messages = [
                 //         'type' => 'text',
@@ -49,15 +48,15 @@ if (!is_null($events['events'])) {
                 //     $constant->default_send($arrayPostData);
                 // }
             } elseif (strpos($text, 'result') !== false) {
-                $return = showresultmatch($text);
+                $return = showresultmatch($text,$replyToken);
             } elseif (strpos($text, 'standing') !== false) {
-                $return = showstanding($text);
+                $return = showstanding($text,$replyToken);
 
             } elseif (strpos($text, 'kingsmanga') !== false) {
-                $return = show_cartoon();
+                $return = show_cartoon($replyToken);
             } 
             elseif (strpos($text, 'moviereview') !== false) {
-                $return = show_movie();
+                $return = show_movie($replyToken);
             }
             elseif ($text == 'main') {
                 //set_rich('ballfix');
@@ -104,7 +103,7 @@ function set_header_flex($text, $arrayContent4)
     }
     return $arrayContent4 = $arrayContent4;
 }
-function show_cartoon()
+function show_cartoon($replyToken)
 {
     $constant                     = new Constant;
     $rss_feed                     = new cartoon_feed;
@@ -116,7 +115,7 @@ function show_cartoon()
     $return                       = $constant->replyMsgFlex($arrayPostData);
 }
 
-function showsteamfixture($team)
+function showsteamfixture($team,$replyToken)
 {
     $constant                     = new Constant;
     $rss_feed                     = new rss_feed;
@@ -128,7 +127,7 @@ function showsteamfixture($team)
     $arrayPostData['messages'][0] = $arrayContent4;
     $return                       = $constant->replyMsgFlex($arrayPostData);
 }
-function showstanding($League)
+function showstanding($League,$replyToken)
 {
     $constant                     = new Constant;
     $rss_feed                     = new rss_feed;
@@ -139,27 +138,28 @@ function showstanding($League)
     $arrayPostData['messages'][0] = $arrayContent4;
     $return                       = $constant->replyMsgFlex($arrayPostData);
 }
-function showmatchtime($League)
+function showmatchtime($League,$replyToken)
 {
     $constant              = new Constant;
     $rss_feed              = new rss_feed;
     $matchday              = $rss_feed->_get_current_matchday($League);
     $arrayContent4         = array();
+    echo $matchday;
     $arrayContent4['type'] = 'flex';
     switch ($League) {
-        case "plfixture":
+        case (strpos($League, 'pl') !== false):
             $arrayContent4['altText'] = 'Premier League Match day #' . $matchday;
             break;
-        case "uclfixture":
+        case (strpos($League, 'ucl') !== false):
             $arrayContent4['altText'] = 'Uefa champions league Match day #' . $matchday;
             break;
-        case "laligafixture":
+        case (strpos($League, 'laliga') !== false):  
             $arrayContent4['altText'] = 'La Liga Match day #' . $matchday;
             break;
-        case "calciofixture":
+        case (strpos($League, 'calcio') !== false):  
             $arrayContent4['altText'] = 'Serie A Match day #' . $matchday;
             break;
-        case "bundesligafixture":
+        case (strpos($League, 'bundesliga') !== false):  
             $arrayContent4['altText'] = 'Bundesliga Match day #' . $matchday;
             break;
     }
@@ -170,7 +170,7 @@ function showmatchtime($League)
     $return                       = $constant->replyMsgFlex($arrayPostData);
 }
 
-function showresultmatch($League)
+function showresultmatch($League,$replyToken)
 {
     $constant = new Constant;
     $rss_feed = new rss_feed;
@@ -179,19 +179,19 @@ function showresultmatch($League)
     $arrayContent4         = array();
     $arrayContent4['type'] = 'flex';
     switch ($League) {
-        case "plresult":
+        case (strpos($League, 'pl') !== false):
             $arrayContent4['altText'] = 'Premier League Match day #' . $matchday . 'result';
             break;
-        case "uclresult":
+        case (strpos($League, 'ucl') !== false):
             $arrayContent4['altText'] = 'Uefa champions league Match day #' . $matchday . 'result';
             break;
-        case "laligaresult":
+        case (strpos($League, 'laliga') !== false):  
             $arrayContent4['altText'] = 'La Liga Match day #' . $matchday . 'result';
             break;
-        case "calcioresult":
+        case (strpos($League, 'calcio') !== false): 
             $arrayContent4['altText'] = 'Serie A Match day #' . $matchday . 'result';
             break;
-        case "bundesligaresult":
+        case (strpos($League, 'bundesliga') !== false):  
             $arrayContent4['altText'] = 'Bundesliga Match day #' . $matchday . 'result';
             break;
     }
@@ -200,7 +200,7 @@ function showresultmatch($League)
     $arrayPostData['messages'][0] = $arrayContent4;
     $return                       = $constant->replyMsgFlex($arrayPostData);
 }
-function show_movie()
+function show_movie($replyToken)
 {
     $constant                     = new Constant;
     $movie_feed                    = new movie;
@@ -209,7 +209,9 @@ function show_movie()
     $arrayContent4['altText']     = 'Movie Score';
     $arrayContent4['contents']    =  $movie_feed->movie_review();
     $arrayPostData['messages'][0] = $arrayContent4;
-    $return                       = $constant->replyMsgFlex($arrayPostData);
+    $arrayPostData['replyToken']  = $replyToken;
+    $return                       = $constant->default_send();
+    //$return                       = $constant->replyMsgFlex($arrayPostData);
     echo $return;
 }
-echo 'version 2.9.9';
+echo 'version 3.0.0';
