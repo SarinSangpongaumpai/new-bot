@@ -63,7 +63,7 @@ if (!is_null($events['events'])) {
                 //$bot->linkRichMenu($userid, 'richmenu-b32651d0c815684f37ba6e18fee48892');
                 //$bot->linkRich('Ue359dced31abcf2b1bd0bd181b498cfa','richmenu-b32651d0c815684f37ba6e18fee48892');
             } else {
-                $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('HI'));
+                $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($replyToken));
             }
         }
     }
@@ -203,15 +203,15 @@ function showresultmatch($League,$replyToken)
 function show_movie($replyToken)
 {
     $constant                     = new Constant;
-    $movie_feed                    = new movie;
+    $movie_feed                   = new movie;
     $arrayContent4                = array();
     $arrayContent4['type']        = 'flex';
     $arrayContent4['altText']     = 'Movie Score';
     $arrayContent4['contents']    =  $movie_feed->movie_review();
     $arrayPostData['messages'][0] = $arrayContent4;
-    $arrayPostData['replyToken']  = $replyToken;
-    $return                       = $constant->default_send($arrayPostData);
-    //$return                       = $constant->replyMsgFlex($arrayPostData);
+    // $arrayPostData['replyToken']  = $replyToken;
+    // $return                       = $constant->default_send($arrayPostData);
+    $return                       = $constant->replyMsgFlex($arrayPostData);
     echo $return;
 }
 echo 'version 3.0.0';
