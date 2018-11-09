@@ -210,7 +210,7 @@ function show_movie($replyToken)
     $arrayContent4['contents']    =  $movie_feed->movie_review();
     $arrayPostData['messages'][0] = $arrayContent4;
     $arrayPostData['replyToken']  = $replyToken;
-    $return                       = $constant->default_send();
+    $return                       = $constant->default_send($arrayPostData);
     //$return                       = $constant->replyMsgFlex($arrayPostData);
     echo $return;
 }
