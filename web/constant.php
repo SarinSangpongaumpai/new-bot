@@ -23,10 +23,11 @@ class Constant
         $channelSecret = $this->channelSecret;
         return $channelSecret;
     }
-    public function replyMsgFlex($arrayPostData)
+    public function replyMsgFlex($arrayPostData,$userid)
     {
         $arrayHeader         = array('Content-Type: application/json', 'Authorization: Bearer ' . $this->get_token());
-        $arrayPostData['to'] = $this->userID;
+        // $arrayPostData['to'] = $this->userID;
+        $arrayPostData['to'] = $userid
         $arrayPostData       = json_encode($arrayPostData);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->strUrl . '/push');

@@ -18,22 +18,22 @@ if (!is_null($events['events'])) {
     foreach ($events['events'] as $event) {
         // Get replyToken
         $replyToken = $event['replyToken'];
+        $userid = $event['source']['userId'];
         if ($event['type'] == 'postback') {
              $data = $event['postback']['data'];
              if (strpos($data, 'Team')){
-                showsteamfixture($data,$replyToken);
+                showsteamfixture($data,$userid);
              }
         }
         // Reply only when message sent is in 'text' format
         elseif ($event['type'] == 'message' && $event['message']['type'] == 'text') {
             // Get userID
-            $userid = $event['source']['userId'];
 
             $text = $event['message']['text'];
             if ($text == "สวัสดี") {
                 //$constant->default_send($arrayPostData);
             } elseif (strpos($text, 'fixture') !== false) {
-                $return = showmatchtime($text,$replyToken);
+                $return = showmatchtime($text,$userid);
                 // if ($return == 'Error') {
                 //     $messages = [
                 //         'type' => 'text',
@@ -48,22 +48,22 @@ if (!is_null($events['events'])) {
                 //     $constant->default_send($arrayPostData);
                 // }
             } elseif (strpos($text, 'result') !== false) {
-                $return = showresultmatch($text,$replyToken);
+                $return = showresultmatch($text,$userid);
             } elseif (strpos($text, 'standing') !== false) {
-                $return = showstanding($text,$replyToken);
+                $return = showstanding($text,$userid);
 
             } elseif (strpos($text, 'kingsmanga') !== false) {
-                $return = show_cartoon($replyToken);
+                $return = show_cartoon($userid);
             } 
             elseif (strpos($text, 'moviereview') !== false) {
-                $return = show_movie($replyToken);
+                $return = show_movie($userid);
             }
             elseif ($text == 'main') {
                 //set_rich('ballfix');
                 //$bot->linkRichMenu($userid, 'richmenu-b32651d0c815684f37ba6e18fee48892');
                 //$bot->linkRich('Ue359dced31abcf2b1bd0bd181b498cfa','richmenu-b32651d0c815684f37ba6e18fee48892');
             } else {
-                $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($replyToken));
+                $bot->replyMessage($replyToken, new \LINE\LINEBot\MessageBuilder\TextMessageBuilder());
             }
         }
     }
@@ -103,7 +103,7 @@ function set_header_flex($text, $arrayContent4)
     }
     return $arrayContent4 = $arrayContent4;
 }
-function show_cartoon($replyToken)
+function show_cartoon($userid)
 {
     $constant                     = new Constant;
     $rss_feed                     = new cartoon_feed;
@@ -112,10 +112,10 @@ function show_cartoon($replyToken)
     $arrayContent4['altText']     = 'Kingsmanga Cartoon';
     $arrayContent4['contents']    = $rss_feed->_get_cartoon();
     $arrayPostData['messages'][0] = $arrayContent4;
-    $return                       = $constant->replyMsgFlex($arrayPostData);
+    $return                       = $constant->replyMsgFlex($arrayPostData,$userid);
 }
 
-function showsteamfixture($team,$replyToken)
+function showsteamfixture($team,$userid)
 {
     $constant                     = new Constant;
     $rss_feed                     = new rss_feed;
@@ -125,9 +125,9 @@ function showsteamfixture($team,$replyToken)
 
     $arrayContent4['contents'] = $rss_feed->_get_match_team($team);
     $arrayPostData['messages'][0] = $arrayContent4;
-    $return                       = $constant->replyMsgFlex($arrayPostData);
+    $return                       = $constant->replyMsgFlex($arrayPostData,$userid);
 }
-function showstanding($League,$replyToken)
+function showstanding($League,$userid)
 {
     $constant                     = new Constant;
     $rss_feed                     = new rss_feed;
@@ -136,9 +136,9 @@ function showstanding($League,$replyToken)
     $arrayContent4['altText']     = 'Premier League Standings';
     $arrayContent4['contents']    = $rss_feed->_get_standings($League, $arrayContent4['altText']);
     $arrayPostData['messages'][0] = $arrayContent4;
-    $return                       = $constant->replyMsgFlex($arrayPostData);
+    $return                       = $constant->replyMsgFlex($arrayPostData,$userid);
 }
-function showmatchtime($League,$replyToken)
+function showmatchtime($League,$userid)
 {
     $constant              = new Constant;
     $rss_feed              = new rss_feed;
@@ -167,10 +167,10 @@ function showmatchtime($League,$replyToken)
     $matchtime                    = $rss_feed->_get_match($League, $arrayContent4['altText']);
     $arrayContent4['contents']    = $matchtime;
     $arrayPostData['messages'][0] = $arrayContent4;
-    $return                       = $constant->replyMsgFlex($arrayPostData);
+    $return                       = $constant->replyMsgFlex($arrayPostData,$userid);
 }
 
-function showresultmatch($League,$replyToken)
+function showresultmatch($League,$userid)
 {
     $constant = new Constant;
     $rss_feed = new rss_feed;
@@ -198,9 +198,9 @@ function showresultmatch($League,$replyToken)
     $matchtime                    = $rss_feed->_get_result($League, $arrayContent4['altText']);
     $arrayContent4['contents']    = $matchtime;
     $arrayPostData['messages'][0] = $arrayContent4;
-    $return                       = $constant->replyMsgFlex($arrayPostData);
+    $return                       = $constant->replyMsgFlex($arrayPostData,$userid);
 }
-function show_movie($replyToken)
+function show_movie($userid)
 {
     $constant                     = new Constant;
     $movie_feed                   = new movie;
@@ -209,9 +209,7 @@ function show_movie($replyToken)
     $arrayContent4['altText']     = 'Movie Score';
     $arrayContent4['contents']    =  $movie_feed->movie_review();
     $arrayPostData['messages'][0] = $arrayContent4;
-    // $arrayPostData['replyToken']  = $replyToken;
-    // $return                       = $constant->default_send($arrayPostData);
-    $return                       = $constant->replyMsgFlex($arrayPostData);
+    $return                       = $constant->replyMsgFlex($arrayPostData,$userid);
     echo $return;
 }
-echo 'version 3.0.0';
+echo 'version 3.0.1';
