@@ -27,7 +27,7 @@ class Constant
     {
         $arrayHeader         = array('Content-Type: application/json', 'Authorization: Bearer ' . $this->get_token());
         // $arrayPostData['to'] = $this->userID;
-        $arrayPostData['to'] = $userid
+        $arrayPostData['to'] = $userid;
         $arrayPostData       = json_encode($arrayPostData);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $this->strUrl . '/push');
